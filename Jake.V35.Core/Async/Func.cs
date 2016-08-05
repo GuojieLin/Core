@@ -6,7 +6,7 @@
 //======================================================//
 
 //2016.4.26     Func增加5,6,7,8个参数
-namespace Jake.Common.V35.Core.Async
+namespace Jake.V35.Core.Async
 {
     public delegate TResult Func<T1, T2, T3, T4, T5, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
 

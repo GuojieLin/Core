@@ -11,7 +11,7 @@
 //          移除无用代码            
 //2016.1.19 实现ContinueWithAsync,当异步处理完成后执行
 //2016.4.26 ActionAsync增加5,6,7,8个参数重载
-namespace Jake.Common.V35.Core.Async
+namespace Jake.V35.Core.Async
 {
     public class ActionAsync : Operator
     {

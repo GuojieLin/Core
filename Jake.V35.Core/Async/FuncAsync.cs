@@ -1,5 +1,5 @@
 ﻿using System;
-using Jake.Common.V35.Core.Async.Interfaces;
+using Jake.V35.Core.Async.Interfaces;
 
 //======================================================//
 //			作者中文名:	林国杰				            //
@@ -11,7 +11,7 @@ using Jake.Common.V35.Core.Async.Interfaces;
 //2015.1.17 添加异常捕获机制
 //2016.1.19 实现ContinueWithAsync,当异步处理完成后执行
 //2016.4.26 FuncAsync增加5,6,7,8个参数重载
-namespace Jake.Common.V35.Core.Async
+namespace Jake.V35.Core.Async
 {
     public class FuncAsync<TResult> : Operator, IFuncOperationAsync<TResult>
     {

@@ -3,9 +3,9 @@ using System.IO;
 using System.Runtime.Remoting.Activation;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
-using Jake.Common.V35.Core.Logging;
+using Jake.V35.Core.Logging;
 
-namespace Jake.Common.V35.Core
+namespace Jake.V35.Core
 {
     [AttributeUsage(AttributeTargets.All,AllowMultiple = false,Inherited = false)]
     public class ValueAttribute : Attribute

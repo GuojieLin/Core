@@ -8,7 +8,7 @@
 //======================================================//
 
 //2016.01.19    实现IContinueWithAsync结果异步处理完成后继续某异步操作
-namespace Jake.Common.V35.Core.Async.Interfaces
+namespace Jake.V35.Core.Async.Interfaces
 {
     public interface IContinueWithAsync
     {

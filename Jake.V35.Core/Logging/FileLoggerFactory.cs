@@ -10,7 +10,7 @@ using System.Text;
 //			创建时间:	4/28/2016 2:03:46 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.Common.V35.Core.Logging
+namespace Jake.V35.Core.Logging
 {
     /// <summary>
     /// Provides an ILoggerFactory based on FileSystem.

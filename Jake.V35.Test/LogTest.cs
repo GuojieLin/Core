@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using Jake.Common.V35.Core.Logging;
+using Jake.V35.Core.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jake.Common.V35.Test
+namespace Jake.V35.Test
 {
     [TestClass]
     public class LogTest

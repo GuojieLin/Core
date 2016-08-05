@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Text;
-using Jake.Common.V35.Core.Extensions;
+using Jake.V35.Core.Extensions;
 
 //======================================================//
 //			作者中文名:	林国杰				            //
@@ -13,7 +13,7 @@ using Jake.Common.V35.Core.Extensions;
 //			创建时间:	4/29/2016 16:30:46 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.Common.V35.Core.Logging
+namespace Jake.V35.Core.Logging
 {
     
     internal class FileLogger : ILogger

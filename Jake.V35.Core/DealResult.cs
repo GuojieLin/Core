@@ -9,7 +9,7 @@ using System.Linq;
 //			创建日期:	2015				            //
 //======================================================//
 //2015.12.26 加入异常构造函数
-namespace Jake.Common.V35.Core
+namespace Jake.V35.Core
 {
     public class DealResult
     {

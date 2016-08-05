@@ -1,5 +1,5 @@
 ﻿using System;
-using Jake.Common.V35.Core.Async.Interfaces;
+using Jake.V35.Core.Async.Interfaces;
 
 //======================================================//
 //			作者中文名:	林国杰				            //
@@ -13,7 +13,7 @@ using Jake.Common.V35.Core.Async.Interfaces;
 //2016.1.7      添加异常机制,异常保存在Exception
 //2016.4.26     添加异步操作完继续操作5，6，7，8个参数的重载
                 
-namespace Jake.Common.V35.Core.Async
+namespace Jake.V35.Core.Async
 {
 
     /// <summary>

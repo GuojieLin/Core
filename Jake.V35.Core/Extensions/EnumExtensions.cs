@@ -10,7 +10,7 @@ using System.Text;
 //			创建时间:	8/1/2016 4:54:57 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.Common.V35.Core.Extensions
+namespace Jake.V35.Core.Extensions
 {
     public static class EnumExtensions
     {

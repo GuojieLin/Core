@@ -13,7 +13,7 @@ using System.Linq;
 //              实现等待全部操作完成
 //2016.01.19    异步执行完成后继续执行操作
 //2016.04.26    添加ActionAsync和FuncAsync的5，6，7，8个参数重置
-namespace Jake.Common.V35.Core.Async
+namespace Jake.V35.Core.Async
 {
     /// <summary>
     /// 异步执行

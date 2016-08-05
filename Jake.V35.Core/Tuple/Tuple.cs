@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Jake.Common.V35.Core.Tuple.Interfaces;
+using Jake.V35.Core.Tuple.Interfaces;
 
 //======================================================//
 //			作者中文名:	林国杰				            //
@@ -12,7 +12,7 @@ using Jake.Common.V35.Core.Tuple.Interfaces;
 //======================================================//
 
 //2016.4.26     .net framework4.0下的Tuple
-namespace Jake.Common.V35.Core.Tuple
+namespace Jake.V35.Core.Tuple
 {
 
     [Serializable]

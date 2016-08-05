@@ -7,7 +7,7 @@
 
 
 //2015.12.19    添加异步操作接口
-namespace Jake.Common.V35.Core.Async.Interfaces
+namespace Jake.V35.Core.Async.Interfaces
 {
     public interface IFuncOperationAsync<T>
     {
