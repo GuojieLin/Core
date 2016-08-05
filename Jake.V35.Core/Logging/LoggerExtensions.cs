@@ -109,7 +109,7 @@ namespace Jake.V35.Core.Logging
                 throw new ArgumentNullException("logger");
             }
 
-            logger.WriteCore(LogType.Error, message, error, TheMessageAndError);
+            logger.WriteCore(LogType.Error, message, error, TheErrorMessageAndStackTrace);
         }
     }
 }
