@@ -9,13 +9,13 @@ using System.Text;
 //			创建时间:	4/28/2016 2:03:46 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.V35.Core.Logging
+namespace Jake.V35.Core.Logger
 {
-    public enum LogType
+    public class Constants
     {
-        [Value("InfoLogs")] Info,
-        [Value("WarningLogs")] Warning,
-        [Value("ErrorLogs")] Error
+        public const string DefaultLogDirectory = "Logs\\";
+        public const string LogEntensionName = ".log";
+        public const string AutoFileNameFormat = "yyyyMMddHHmmss";
+        public const string LogDirectoryDateFormat = "yyyyMMdd";
     }
-
 }

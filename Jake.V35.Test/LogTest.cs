@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Jake.V35.Core.Logging;
+using Jake.V35.Core.Logger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jake.V35.Test

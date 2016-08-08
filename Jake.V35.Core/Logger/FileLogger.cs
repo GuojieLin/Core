@@ -13,9 +13,11 @@ using Jake.V35.Core.Extensions;
 //			创建时间:	4/29/2016 16:30:46 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.V35.Core.Logging
+namespace Jake.V35.Core.Logger
 {
-    
+    /// <summary>
+    /// 2016.08.5 删除键和获取文件大小是对dictionary加锁
+    /// </summary>
     internal class FileLogger : ILogger
     {
         private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
@@ -144,17 +146,20 @@ namespace Jake.V35.Core.Logging
                     Monitor.Enter(dictionary);
                     List<string> keys = dictionary.Keys.ToList();
                     Monitor.Exit(dictionary);
-                    foreach (var key in keys)
+                    lock (dictionary)
                     {
-                        lock (dictionary)
+                        foreach (var key in keys)
                         {
-                            if (dictionary[key].Length <= 0)
+                            lock (dictionary)
                             {
-                                dictionary.Remove(key);
-                                lock (FileLocks)
+                                if (dictionary[key].Length <= 0)
                                 {
-                                    if (FileLocks.ContainsKey(key))
-                                        FileLocks.Remove(key);
+                                    dictionary.Remove(key);
+                                    lock (FileLocks)
+                                    {
+                                        if (FileLocks.ContainsKey(key))
+                                            FileLocks.Remove(key);
+                                    }
                                 }
                             }
                         }
@@ -168,7 +173,7 @@ namespace Jake.V35.Core.Logging
             string path = String.Format("{0}\\{1}\\{2}\\{3}", DirectoryName.TrimEnd('\\'),
                  DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue(), FileName);
 
-            if (GetFileSize(path) + Encoding.UTF8.GetBytes(content).Length / 1024 > 1024)
+            if (GetFileSize(logType,path) + Encoding.UTF8.GetBytes(content).Length / 1024 > 1024)
             {
                 var fn = Path.GetFileNameWithoutExtension(path);
                 int index = fn.IndexOf("_", StringComparison.Ordinal);
@@ -210,7 +215,6 @@ namespace Jake.V35.Core.Logging
             }
             AddLock(fileName);
         }
-
         private static object AddLock(string fileName)
         {
             object o;
@@ -225,17 +229,21 @@ namespace Jake.V35.Core.Logging
             return o;
         }
 
-        private static long GetFileSize(string fileName)
+        private static long GetFileSize(LogType logType,string fileName)
         {
+            IDictionary dictionary = logType == LogType.Error ? EmergencyWriteLogDirectory : WriteLogDirectory;
             long strRe = 0;
             if (File.Exists(fileName))
             {
-                AddLock(fileName);
-                lock (FileLocks[fileName])
+                lock (dictionary)
                 {
-                    using (var fileStream = new FileStream(fileName, FileMode.Open))
+                    AddLock(fileName);
+                    lock (FileLocks[fileName])
                     {
-                        strRe = fileStream.Length / 1024;
+                        using (var fileStream = new FileStream(fileName, FileMode.Open))
+                        {
+                            strRe = fileStream.Length/1024;
+                        }
                     }
                 }
             }

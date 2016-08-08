@@ -11,7 +11,7 @@ using System.Text;
 //			创建时间:	4/28/2016 2:06:35 PM			//
 //			创建日期:	2016				            //
 //======================================================//
-namespace Jake.V35.Core.Logging
+namespace Jake.V35.Core.Logger
 {
     /// <summary>
     /// ILogger extension methods for common scenarios.
@@ -46,7 +46,16 @@ namespace Jake.V35.Core.Logging
                 throw new ArgumentNullException("logger");
             }
 
-            logger.WriteCore(LogType.Info, message, null, TheMessage);
+            logger.WriteInfo(message, null);
+        }
+        public static void WriteInfo(this ILogger logger, string message,Exception exception)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            if (exception == null) logger.WriteCore(LogType.Info, message, null, TheMessage);
+            else logger.WriteCore(LogType.Info, message, exception, TheMessageAndError);
         }
 
         /// <summary>
@@ -54,15 +63,13 @@ namespace Jake.V35.Core.Logging
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message"></param>
-        /// <param name="args"></param>
-        public static void WriteWarning(this ILogger logger, string message, params string[] args)
+        public static void WriteWarning(this ILogger logger, string message)
         {
             if (logger == null)
             {
                 throw new ArgumentNullException("logger");
             }
-
-            logger.WriteCore(LogType.Warning, string.Format(CultureInfo.InvariantCulture, message, args), null, TheMessage);
+            logger.WriteWarning(message, null);
         }
 
         /// <summary>
@@ -77,8 +84,8 @@ namespace Jake.V35.Core.Logging
             {
                 throw new ArgumentNullException("logger");
             }
-
-            logger.WriteCore(LogType.Warning, message, error, TheMessageAndError);
+            if (error == null) logger.WriteCore(LogType.Warning, message, null, TheMessage);
+            else logger.WriteCore(LogType.Warning, message, error, TheMessageAndError);
         }
 
         /// <summary>
@@ -92,8 +99,21 @@ namespace Jake.V35.Core.Logging
             {
                 throw new ArgumentNullException("logger");
             }
+            logger.WriteError(message, null);
+        }
 
-            logger.WriteCore(LogType.Error, message, null, TheMessage);
+        /// <summary>
+        /// Writes an error log message.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="error"></param>
+        public static void WriteError(this ILogger logger, Exception error)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.WriteError("", error);
         }
 
         /// <summary>
@@ -109,7 +129,8 @@ namespace Jake.V35.Core.Logging
                 throw new ArgumentNullException("logger");
             }
 
-            logger.WriteCore(LogType.Error, message, error, TheErrorMessageAndStackTrace);
+            if (error == null) logger.WriteCore(LogType.Error, message, null, TheMessage);
+            else logger.WriteCore(LogType.Error, message, error, TheErrorMessageAndStackTrace);
         }
     }
 }

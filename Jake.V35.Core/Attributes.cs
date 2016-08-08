@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Remoting.Activation;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
-using Jake.V35.Core.Logging;
+using Jake.V35.Core.Logger;
 
 namespace Jake.V35.Core
 {
