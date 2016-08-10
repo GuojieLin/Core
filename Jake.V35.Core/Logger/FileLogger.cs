@@ -46,11 +46,11 @@ namespace Jake.V35.Core.Logger
         /// <summary>
         /// 一般日志
         /// </summary>
-        private static Thread _writeThread;
+        private static System.Threading.Thread _writeThread;
         /// <summary>
         /// 错误日志另外处理，保证能实时记录
         /// </summary>
-        private static Thread _emergencyWriteThread;
+        private static System.Threading.Thread _emergencyWriteThread;
 
         static FileLogger()
         {
@@ -59,8 +59,8 @@ namespace Jake.V35.Core.Logger
             EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
             _writeAutoResetEvent = new AutoResetEvent(false);
             _emergencyWriteAutoResetEvent = new AutoResetEvent(false);
-            _writeThread = new Thread(StartWriter);
-            _emergencyWriteThread = new Thread(StartWriter);
+            _writeThread = new System.Threading.Thread(StartWriter);
+            _emergencyWriteThread = new System.Threading.Thread(StartWriter);
 
             _writeThread.IsBackground = true;
             _emergencyWriteThread.IsBackground = true;
