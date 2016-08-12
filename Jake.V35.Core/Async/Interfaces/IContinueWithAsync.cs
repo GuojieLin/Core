@@ -14,38 +14,43 @@ namespace Jake.V35.Core.Async.Interfaces
     {
         Operator Previous { get; set; }
         Operator Next { get; set; }
-        Operator ContinueWithAsync(Action action);
-        Operator ContinueWithAsync<TParameter>(Action<TParameter> action, TParameter parameter);
-        Operator ContinueWithAsync<TParameter1, TParameter2>(Action<TParameter1, TParameter2> action,
+        ActionAsync ContinueWithAsync(Action action);
+        ActionAsync<Operator> ContinueWithAsync(Action<Operator> action);
+        ActionAsync<Operator, TParameter> ContinueWithAsync<TParameter>(Action<Operator, TParameter> action, TParameter parameter);
+        ActionAsync<Operator, TParameter1, TParameter2> ContinueWithAsync<TParameter1, TParameter2>(Action<Operator, TParameter1, TParameter2> action,
             TParameter1 parameter1, TParameter2 parameter2);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3>
-            (Action<TParameter1, TParameter2, TParameter3> action,
+        ActionAsync<Operator, TParameter1, TParameter2, TParameter3> ContinueWithAsync<TParameter1, TParameter2, TParameter3>
+            (Action<Operator,TParameter1, TParameter2, TParameter3> action,
                 TParameter1 parameter1,
                 TParameter2 parameter2,
                 TParameter3 parameter3);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4> action,
+        ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4> 
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>(
+            Action<Operator,TParameter1, TParameter2, TParameter3, TParameter4> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5> action,
+        ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>(
+            Action<Operator,TParameter1, TParameter2, TParameter3, TParameter4, TParameter5> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4,
             TParameter5 parameter5);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6> action,
+        ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>(
+            Action<Operator,TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4,
             TParameter5 parameter5,
             TParameter6 parameter6);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7> action,
+        ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>(
+            Action<Operator,TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
@@ -53,51 +58,47 @@ namespace Jake.V35.Core.Async.Interfaces
             TParameter5 parameter5,
             TParameter6 parameter6,
             TParameter7 parameter7);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6,TParameter7, TParameter8>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8> action,
-            TParameter1 parameter1,
-            TParameter2 parameter2,
-            TParameter3 parameter3,
-            TParameter4 parameter4,
-            TParameter5 parameter5,
-            TParameter6 parameter6,
-            TParameter7 parameter7,
-            TParameter8 parameter8);
-        Operator ContinueWithAsync<TResult>(Func<TResult> func);
-        Operator ContinueWithAsync<TParameter, TResult>(Func<TParameter, TResult> func,
+        FuncAsync<TResult> ContinueWithAsync<TResult>(Func<TResult> func);
+        FuncAsync<Operator, TResult> ContinueWithAsync<TResult>(Func<Operator, TResult> func);
+        FuncAsync<Operator, TParameter, TResult> ContinueWithAsync<TParameter, TResult>(Func<Operator, TParameter, TResult> func,
             TParameter parameter);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TResult>
-            (Func<TParameter1, TParameter2, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TResult> ContinueWithAsync<TParameter1, TParameter2, TResult>
+            (Func<Operator, TParameter1, TParameter2, TResult> func,
                 TParameter1 parameter1,
                 TParameter2 parameter2);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> 
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4,TParameter5, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4,
             TParameter5 parameter5);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5,TParameter6, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5,TParameter6, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4,
             TParameter5 parameter5,
             TParameter6 parameter6);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6,TParameter7, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6,TParameter7, TResult> func,
+        FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
@@ -105,15 +106,5 @@ namespace Jake.V35.Core.Async.Interfaces
             TParameter5 parameter5,
             TParameter6 parameter6,
             TParameter7 parameter7);
-        Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7,TParameter8, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8, TResult> func,
-            TParameter1 parameter1,
-            TParameter2 parameter2,
-            TParameter3 parameter3,
-            TParameter4 parameter4,
-            TParameter5 parameter5,
-            TParameter6 parameter6,
-            TParameter7 parameter7,
-            TParameter8 parameter8);
     }
 }

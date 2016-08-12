@@ -65,98 +65,116 @@ namespace Jake.V35.Core.Async
             if (Next != null) Next.Invoke();
             return Next;
         }
-        public virtual Operator ContinueWithAsync(Action action)
+        public virtual ActionAsync ContinueWithAsync(Action action)
         {
             Next = new ActionAsync(action);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync) Next;
         }
 
-        public virtual Operator ContinueWithAsync<TParameter>(Action<TParameter> action, TParameter parameter)
+        public virtual ActionAsync<Operator> ContinueWithAsync(Action<Operator> action)
         {
-            Next = new ActionAsync<TParameter>(action, parameter);
+            Next = new ActionAsync<Operator>(action, this);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator>)Next;
         }
 
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2>(Action<TParameter1, TParameter2> action, TParameter1 parameter1,TParameter2 parameter2)
+        public virtual ActionAsync<Operator, TParameter> ContinueWithAsync<TParameter>(Action<Operator, TParameter> action, TParameter parameter)
         {
-            Next = new ActionAsync<TParameter1, TParameter2>(action, parameter1,parameter2);
+            Next = new ActionAsync<Operator, TParameter>(action, this, parameter);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter>)Next;
         }
 
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3>
-            (Action<TParameter1, TParameter2, TParameter3> action,
+        public virtual ActionAsync<Operator, TParameter1, TParameter2> ContinueWithAsync<TParameter1, TParameter2>(
+            Action<Operator, TParameter1, TParameter2> action, TParameter1 parameter1, TParameter2 parameter2)
+        {
+            Next = new ActionAsync<Operator, TParameter1, TParameter2>(action, this, parameter1, parameter2);
+            Next.Previous = this;
+            return (ActionAsync<Operator, TParameter1, TParameter2>)Next;
+        }
+
+        public virtual ActionAsync<Operator, TParameter1, TParameter2, TParameter3> ContinueWithAsync<TParameter1, TParameter2, TParameter3>
+            (Action<Operator, TParameter1, TParameter2, TParameter3> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3)
         {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3>(action, parameter1, parameter2, parameter3);
+            Next = new ActionAsync<Operator, TParameter1, TParameter2, TParameter3>(action, this,parameter1, parameter2, parameter3);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter1, TParameter2, TParameter3>)Next;
         }
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>(Action<TParameter1, TParameter2, TParameter3, TParameter4> action, 
+        public virtual ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>(Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4> action, 
             TParameter1 parameter1, 
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4)
         {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4>
-                (action, parameter1, parameter2, parameter3,parameter4);
+            Next = new ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4>
+                (action,this, parameter1, parameter2, parameter3,parameter4);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4>)Next;
         }
 
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>(Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5> action,
+        public virtual ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>(Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5> action,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4,
             TParameter5 parameter5)
         {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>
-                (action, parameter1, parameter2, parameter3, parameter4, parameter5);
+            Next = new ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>
+                (action, this,parameter1, parameter2, parameter3, parameter4, parameter5);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5>)Next;
         }
 
-        public Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>(Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6> action,
+        public ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>(Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6> action,
             TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
             TParameter5 parameter5, TParameter6 parameter6)
         {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>
-                (action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
+            Next = new ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>
+                (action,this, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6>)Next;
         }
 
-        public Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7> action, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
+        public ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>(
+            Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7> action, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
             TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7)
         {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>
-                (action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
+            Next = new ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>
+                (action,this, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
             Next.Previous = this;
-            return Next;
+            return (ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7>)Next;
         }
 
-        public Operator ContinueWithAsync
-            <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8>(
-            Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8> action, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
-            TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7, TParameter8 parameter8)
-        {
-            Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8>
-                (action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
-            Next.Previous = this;
-            return Next;
-        }
+        //public Operator ContinueWithAsync
+        //    <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8>(
+        //    Action<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8> action, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
+        //    TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7, TParameter8 parameter8)
+        //{
+        //    Next = new ActionAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8>
+        //        (action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
+        //    Next.Previous = this;
+        //    return Next;
+        //}
 
-        public virtual Operator ContinueWithAsync<TResult>(Func<TResult> func)
+        public virtual FuncAsync<TResult> ContinueWithAsync<TResult>(Func<TResult> func)
         {
-            Next = new FuncAsync<TResult>();
+            Next = new FuncAsync<TResult>(func);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<TResult>)Next;
+        }
+        public virtual FuncAsync<Operator, TResult> ContinueWithAsync<TResult>(Func<Operator, TResult> func)
+        {
+            Next = new FuncAsync<Operator, TResult>(func, this);
+            Next.Previous = this;
+            return (FuncAsync<Operator, TResult>)Next;
         }
 
         /// <summary>
@@ -165,12 +183,12 @@ namespace Jake.V35.Core.Async
         /// </summary>
         /// <param name="func"></param>
         /// <param name="parameter"></param>
-        public virtual Operator ContinueWithAsync<TParameter, TResult>(Func<TParameter, TResult> func,
+        public virtual FuncAsync<Operator, TParameter, TResult> ContinueWithAsync<TParameter, TResult>(Func<Operator, TParameter, TResult> func,
             TParameter parameter)
         {
-            Next = new FuncAsync<TParameter, TResult>(func, parameter);
+            Next = new FuncAsync<Operator, TParameter, TResult>(func,this, parameter);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter, TResult>)Next;
         }
 
         /// <summary>
@@ -180,79 +198,82 @@ namespace Jake.V35.Core.Async
         /// <param name="func"></param>
         /// <param name="parameter1"></param>
         /// <param name="parameter2"></param>
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2, TResult>
-            (Func<TParameter1, TParameter2, TResult> func,
+        public virtual FuncAsync<Operator, TParameter1, TParameter2, TResult> ContinueWithAsync<TParameter1, TParameter2, TResult>
+            (Func<Operator, TParameter1, TParameter2, TResult> func,
             TParameter1 parameter1, 
             TParameter2 parameter2)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TResult>(func, parameter1, parameter2);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TResult>(func, this,parameter1, parameter2);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TResult>)Next;
         }
 
-        public Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>(Func<TParameter1, TParameter2, TParameter3, TResult> func, 
+        public FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TResult> ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>(Func<Operator, TParameter1, TParameter2, TParameter3, TResult> func, 
             TParameter1 parameter1, 
             TParameter2 parameter2, 
             TParameter3 parameter3)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TResult>
-                (func, parameter1, parameter2, parameter3);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TResult>
+                (func,this, parameter1, parameter2, parameter3);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TResult>)Next;
         }
 
-        public virtual Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>(Func<TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
+        public virtual FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>(Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
             TParameter4 parameter4)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>
-                (func, parameter1, parameter2, parameter3, parameter4);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult>
+                (func, this,parameter1, parameter2, parameter3, parameter4);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult>)Next;
         }
 
-        public Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>(Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult> func,
+        public FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>(Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult> func,
             TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
             TParameter5 parameter5)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>
-                (func, parameter1, parameter2, parameter3, parameter4, parameter5);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>
+                (func, this,parameter1, parameter2, parameter3, parameter4, parameter5);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TResult>)Next;
         }
 
-        public Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult> func, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
+        public FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>
+            ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>(
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult> func, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
             TParameter5 parameter5, TParameter6 parameter6)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5,TParameter6, TResult>
-                (func, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>
+                (func,this, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TResult>)Next;
         }
 
-        public Operator ContinueWithAsync
-            <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>(Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult> func,
+        public FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>
+            ContinueWithAsync
+            <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>(Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult> func,
                 TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
                 TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7)
         {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6,TParameter7, TResult>
-                (func, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
+            Next = new FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>
+                (func, this,parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
             Next.Previous = this;
-            return Next;
+            return (FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TResult>)Next;
         }
 
-        public Operator ContinueWithAsync
-            <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8, TResult>(
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8, TResult> func, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
-            TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7, TParameter8 parameter8)
-        {
-            Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7,TParameter8, TResult>
-                (func, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
-            Next.Previous = this;
-            return Next;
-        }
+        //public Operator ContinueWithAsync
+        //    <TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8, TResult>(
+        //    Func<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7, TParameter8, TResult> func, TParameter1 parameter1, TParameter2 parameter2, TParameter3 parameter3, TParameter4 parameter4,
+        //    TParameter5 parameter5, TParameter6 parameter6, TParameter7 parameter7, TParameter8 parameter8)
+        //{
+        //    Next = new FuncAsync<TParameter1, TParameter2, TParameter3, TParameter4, TParameter5, TParameter6, TParameter7,TParameter8, TResult>
+        //        (func, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
+        //    Next.Previous = this;
+        //    return Next;
+        //}
     }
 }

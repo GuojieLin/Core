@@ -54,61 +54,61 @@ namespace Jake.V35.Core.Async
         /// <param name="action"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public static Operator Invoke<T>(Action<T> action, T parameter)
+        public static ActionAsync<T> Invoke<T>(Action<T> action, T parameter)
         {
-            Operator @operator = new ActionAsync<T>(action, parameter);
+            ActionAsync<T> @operator = new ActionAsync<T>(action, parameter);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2>(Action<T1, T2> action, T1 parameter1, T2 parameter2)
+        public static ActionAsync<T1, T2> Invoke<T1, T2>(Action<T1, T2> action, T1 parameter1, T2 parameter2)
         {
-            Operator @operator = new ActionAsync<T1, T2>(action, parameter1, parameter2);
+            ActionAsync<T1, T2> @operator = new ActionAsync<T1, T2>(action, parameter1, parameter2);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3>(Action<T1, T2, T3> action, T1 parameter1, T2 parameter2, T3 parameter3)
+        public static ActionAsync<T1, T2, T3> Invoke<T1, T2, T3>(Action<T1, T2, T3> action, T1 parameter1, T2 parameter2, T3 parameter3)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3>(action, parameter1, parameter2, parameter3);
+            ActionAsync<T1, T2, T3> @operator = new ActionAsync<T1, T2, T3>(action, parameter1, parameter2, parameter3);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 parameter1, T2 parameter2,
+        public static ActionAsync<T1, T2, T3, T4> Invoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 parameter1, T2 parameter2,
             T3 parameter3, T4 parameter4)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3, T4>(action, parameter1, parameter2, parameter3, parameter4);
+            ActionAsync<T1, T2, T3, T4> @operator = new ActionAsync<T1, T2, T3, T4>(action, parameter1, parameter2, parameter3, parameter4);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action, T1 parameter1, T2 parameter2,
+        public static ActionAsync<T1, T2, T3, T4, T5> Invoke<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action, T1 parameter1, T2 parameter2,
             T3 parameter3, T4 parameter4, T5 parameter5)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3, T4, T5>(action, parameter1, parameter2, parameter3, parameter4, parameter5);
+            ActionAsync<T1, T2, T3, T4, T5> @operator = new ActionAsync<T1, T2, T3, T4, T5>(action, parameter1, parameter2, parameter3, parameter4, parameter5);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action, T1 parameter1, T2 parameter2,
+        public static ActionAsync<T1, T2, T3, T4, T5, T6> Invoke<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action, T1 parameter1, T2 parameter2,
             T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3, T4, T5, T6>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
+            ActionAsync<T1, T2, T3, T4, T5, T6> @operator = new ActionAsync<T1, T2, T3, T4, T5, T6>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6);
             @operator.Invoke();
             return @operator;
         }
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6,T7>(Action<T1, T2, T3, T4, T5, T6, T7> action, T1 parameter1, T2 parameter2,
+        public static ActionAsync<T1, T2, T3, T4, T5, T6, T7> Invoke<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action, T1 parameter1, T2 parameter2,
             T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3, T4, T5, T6, T7>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
+            ActionAsync<T1, T2, T3, T4, T5, T6, T7> @operator = new ActionAsync<T1, T2, T3, T4, T5, T6, T7>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7);
             @operator.Invoke();
             return @operator;
         }
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 parameter1, T2 parameter2,
+        public static ActionAsync<T1, T2, T3, T4, T5, T6, T7, T8> Invoke<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 parameter1, T2 parameter2,
             T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7, T8 parameter8)
         {
-            Operator @operator = new ActionAsync<T1, T2, T3, T4, T5, T6, T7, T8>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
+            ActionAsync<T1, T2, T3, T4, T5, T6, T7, T8> @operator = new ActionAsync<T1, T2, T3, T4, T5, T6, T7, T8>(action, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6, parameter7, parameter8);
             @operator.Invoke();
             return @operator;
         }
@@ -119,7 +119,7 @@ namespace Jake.V35.Core.Async
         /// <param name="items"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IEnumerable<Operator> Foreach<TParameter>(IEnumerable<TParameter> items, Action<TParameter> action)
+        public static IEnumerable<ActionAsync<TParameter>> Foreach<TParameter>(IEnumerable<TParameter> items, Action<TParameter> action)
         {
             return items.Select(t => Invoke(action, t)).ToList();
             //不能用yield 否则如果不出发,就不会调用方法
@@ -148,10 +148,10 @@ namespace Jake.V35.Core.Async
         /// 自动从线程池获取一个空闲线程去去执行操作
         /// </summary>
         /// <param name="func"></param>
-        public static Operator Invoke<TResult>(Func<TResult> func)
+        public static FuncAsync<TResult> Invoke<TResult>(Func<TResult> func)
         {
 
-            Operator @operator = new FuncAsync<TResult>(func);
+            FuncAsync<TResult> @operator = new FuncAsync<TResult>(func);
             @operator.Invoke();
             return @operator;
         }
@@ -162,10 +162,10 @@ namespace Jake.V35.Core.Async
         /// </summary>
         /// <param name="func"></param>
         /// <param name="parameter"></param>
-        public static Operator Invoke<TParameter, TResult>(Func<TParameter, TResult> func, TParameter parameter)
+        public static FuncAsync<TParameter, TResult> Invoke<TParameter, TResult>(Func<TParameter, TResult> func, TParameter parameter)
         {
             TParameter param = parameter;
-            Operator @operator = new FuncAsync<TParameter, TResult>(func, param);
+            FuncAsync<TParameter, TResult> @operator = new FuncAsync<TParameter, TResult>(func, param);
             @operator.Invoke();
             return @operator;
         }
@@ -177,59 +177,59 @@ namespace Jake.V35.Core.Async
         /// <param name="func"></param>
         /// <param name="parameter1"></param>
         /// <param name="parameter2"></param>
-        public static Operator Invoke<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 parameter1, T2 parameter2)
+        public static FuncAsync<T1, T2, TResult> Invoke<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 parameter1, T2 parameter2)
         {
-            Operator @operator = new FuncAsync<T1, T2, TResult>(func, parameter1, parameter2);
+            FuncAsync<T1, T2, TResult> @operator = new FuncAsync<T1, T2, TResult>(func, parameter1, parameter2);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> func, T1 parameter1, T2 parameter2,
+        public static FuncAsync<T1, T2, T3, TResult> Invoke<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> func, T1 parameter1, T2 parameter2,
             T3 parameter3)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, TResult>(func, parameter1, parameter2, parameter3);
+            FuncAsync<T1, T2, T3, TResult> @operator = new FuncAsync<T1, T2, T3, TResult>(func, parameter1, parameter2, parameter3);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> func, T1 parameter1,
+        public static FuncAsync<T1, T2, T3, T4, TResult> Invoke<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> func, T1 parameter1,
             T2 parameter2, T3 parameter3, T4 parameter4)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, T4, TResult>(func, parameter1, parameter2, parameter3,
+            FuncAsync<T1, T2, T3, T4, TResult> @operator = new FuncAsync<T1, T2, T3, T4, TResult>(func, parameter1, parameter2, parameter3,
                 parameter4);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4, T5, TResult>(Func<T1, T2, T3, T4, T5, TResult> func, T1 parameter1,
+        public static FuncAsync<T1, T2, T3, T4, T5, TResult> Invoke<T1, T2, T3, T4, T5, TResult>(Func<T1, T2, T3, T4, T5, TResult> func, T1 parameter1,
             T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, T4,T5, TResult>(func, parameter1, parameter2, parameter3,
+            FuncAsync<T1, T2, T3, T4,T5, TResult> @operator = new FuncAsync<T1, T2, T3, T4, T5, TResult>(func, parameter1, parameter2, parameter3,
                 parameter4, parameter5);
             @operator.Invoke();
             return @operator;
         }
 
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6, TResult>(Func<T1, T2, T3, T4, T5, T6, TResult> func, T1 parameter1,
+        public static FuncAsync<T1, T2, T3, T4, T5, T6, TResult> Invoke<T1, T2, T3, T4, T5, T6, TResult>(Func<T1, T2, T3, T4, T5, T6, TResult> func, T1 parameter1,
             T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, TResult>(func, parameter1, parameter2, parameter3,
+            FuncAsync<T1, T2, T3, T4, T5, T6, TResult> @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, TResult>(func, parameter1, parameter2, parameter3,
                 parameter4, parameter5, parameter6);
             @operator.Invoke();
             return @operator;
         }
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6, T7, TResult>(Func<T1, T2, T3, T4, T5, T6, T7, TResult> func, T1 parameter1,
+        public static FuncAsync<T1, T2, T3, T4, T5, T6, T7, TResult> Invoke<T1, T2, T3, T4, T5, T6, T7, TResult>(Func<T1, T2, T3, T4, T5, T6, T7, TResult> func, T1 parameter1,
             T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, T7, TResult>(func, parameter1, parameter2, parameter3,
+            FuncAsync<T1, T2, T3, T4, T5, T6, T7, TResult> @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, T7, TResult>(func, parameter1, parameter2, parameter3,
                 parameter4, parameter5, parameter6, parameter7);
             @operator.Invoke();
             return @operator;
         }
-        public static Operator Invoke<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func, T1 parameter1,
+        public static FuncAsync<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Invoke<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func, T1 parameter1,
             T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7, T8 parameter8)
         {
-            Operator @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(func, parameter1, parameter2, parameter3,
+            FuncAsync<T1, T2, T3, T4, T5, T6, T7, T8, TResult> @operator = new FuncAsync<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(func, parameter1, parameter2, parameter3,
                 parameter4, parameter5, parameter6, parameter7, parameter8);
             @operator.Invoke();
             return @operator;
@@ -242,7 +242,7 @@ namespace Jake.V35.Core.Async
         /// <param name="items"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static IEnumerable<Operator> Foreach<TParameter, TResult>(IEnumerable<TParameter> items, Func<TParameter, TResult> func)
+        public static IEnumerable<FuncAsync<TParameter, TResult>> Foreach<TParameter, TResult>(IEnumerable<TParameter> items, Func<TParameter, TResult> func)
         {
             return items.Select(parameter => Invoke(func, parameter)).ToList();
             //不能用yield 否则如果不出发,就不会调用方法
@@ -254,14 +254,14 @@ namespace Jake.V35.Core.Async
             //}
         }
 
-        public static IEnumerable<Operator> For<TParameter, TResult>(int start, int end, Func<TParameter, TResult> func, TParameter parameter)
+        public static IEnumerable<FuncAsync<TParameter, TResult>> For<TParameter, TResult>(int start, int end, Func<TParameter, TResult> func, TParameter parameter)
         {
             for (; start < end; start++)
             {
                 yield return Invoke(func, parameter);
             }
         }
-        public static IEnumerable<Operator> For<TResult>(int start, int end, Func<TResult> func)
+        public static IEnumerable<FuncAsync<TResult>> For<TResult>(int start, int end, Func<TResult> func)
         {
             for (; start < end; start++)
             {
@@ -281,18 +281,23 @@ namespace Jake.V35.Core.Async
             return Invoke(WaitAll, operators)
                 .ContinueWithAsync(action);
         }
-        public static Operator ContinueWithAsync<TParameter>(IEnumerable<Operator> operators, Action<TParameter> action, TParameter parameter)
+        public static Operator ContinueWithAsync(IEnumerable<Operator> operators, Action<Operator> action)
+        {
+            return Invoke(WaitAll, operators)
+                .ContinueWithAsync(action);
+        }
+        public static Operator ContinueWithAsync<TParameter>(IEnumerable<Operator> operators, Action<Operator,TParameter> action, TParameter parameter)
         {
             return Invoke(WaitAll, operators)
                 .ContinueWithAsync(action, parameter);
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2>(IEnumerable<Operator> operators, Action<TParameter1, TParameter2> action, TParameter1 parameter1, TParameter2 parameter2)
+        public static Operator ContinueWithAsync<TParameter1, TParameter2>(IEnumerable<Operator> operators, Action<Operator, TParameter1, TParameter2> action, TParameter1 parameter1, TParameter2 parameter2)
         {
             return Invoke(WaitAll, operators)
                 .ContinueWithAsync(action, parameter1, parameter2);
         }
         public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3>
-            (IEnumerable<Operator> operators, Action<TParameter1, TParameter2, TParameter3> action, 
+            (IEnumerable<Operator> operators, Action<Operator, TParameter1, TParameter2, TParameter3> action, 
             TParameter1 parameter1, 
             TParameter2 parameter2,
             TParameter3 parameter3)
@@ -301,8 +306,8 @@ namespace Jake.V35.Core.Async
                 .ContinueWithAsync(action, parameter1, parameter2, parameter3);
         }
         public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>
-            (IEnumerable<Operator> operators, 
-            Action<TParameter1, TParameter2, TParameter3, TParameter4> action,
+            (IEnumerable<Operator> operators,
+            Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4> action,
             TParameter1 parameter1,
             TParameter2 parameter2, 
             TParameter3 parameter3, 
@@ -325,15 +330,20 @@ namespace Jake.V35.Core.Async
             return Invoke(WaitAll, operators)
                 .ContinueWithAsync(func);
         }
-        public static Operator ContinueWithAsync<TParameter, TResult>(IEnumerable<Operator> operators, 
-            Func<TParameter, TResult> func, TParameter parameter)
+        public static Operator ContinueWithAsync<TResult>(IEnumerable<Operator> operators, Func<Operator,TResult> func)
+        {
+            return Invoke(WaitAll, operators)
+                .ContinueWithAsync(func);
+        }
+        public static Operator ContinueWithAsync<TParameter, TResult>(IEnumerable<Operator> operators,
+            Func<Operator,TParameter, TResult> func, TParameter parameter)
         {
             return Invoke(WaitAll, operators)
                 .ContinueWithAsync(func, parameter);
         }
         public static Operator ContinueWithAsync<TParameter1, TParameter2, TResult>
-            (IEnumerable<Operator> operators, 
-            Func<TParameter1, TParameter2, TResult> func, 
+            (IEnumerable<Operator> operators,
+            Func<Operator, TParameter1, TParameter2, TResult> func, 
             TParameter1 parameter1,
             TParameter2 parameter2)
         {
@@ -341,8 +351,8 @@ namespace Jake.V35.Core.Async
                 .ContinueWithAsync(func, parameter1, parameter2);
         }
         public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>
-            (IEnumerable<Operator> operators, 
-            Func<TParameter1, TParameter2, TParameter3, TResult> func,
+            (IEnumerable<Operator> operators,
+            Func<Operator, TParameter1, TParameter2, TParameter3, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3)
@@ -351,8 +361,8 @@ namespace Jake.V35.Core.Async
                 .ContinueWithAsync(func, parameter1, parameter2, parameter3);
         }
         public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>
-            (IEnumerable<Operator> operators, 
-            Func<TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
+            (IEnumerable<Operator> operators,
+            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3,
