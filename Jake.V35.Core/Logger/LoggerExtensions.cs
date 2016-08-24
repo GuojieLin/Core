@@ -24,15 +24,16 @@ namespace Jake.V35.Core.Logger
 
         private static readonly Func<string, Exception, string> TheMessage =
             (message, error) =>
-                string.Format(CultureInfo.CurrentCulture, "{0}: {1}", NowTimeString, (string) message);
+                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n", NowTimeString, (string) message);
 
         private static readonly Func<string, Exception, string> TheMessageAndError =
             (message, error) =>
-                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n{2}", NowTimeString, message, error.Message);
+                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n{2}\r\n", NowTimeString, message, error.Message);
 
         private static readonly Func<string, Exception, string> TheErrorMessageAndStackTrace =
             (message, error) =>
-                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n{2}", NowTimeString, error.Message, error.StackTrace);
+                string.Format(CultureInfo.CurrentCulture, "{0}: {1} {2}\r\n{3}\r\n", NowTimeString, message,
+                    error.Message, error.StackTrace);
 
         /// <summary>
         /// Writes an informational log message.

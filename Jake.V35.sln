@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jake.V35.Core", "Jake.V35.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jake.V35.Test", "Jake.V35.Test\Jake.V35.Test.csproj", "{E5265589-6731-4C5C-8FAD-1C63961EB091}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jake.V35.Console.Test", "Jake.V35.Console.Test\Jake.V35.Console.Test.csproj", "{AB135137-EF77-48AC-B802-A60A88F74B4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,16 @@ Global
 		{E5265589-6731-4C5C-8FAD-1C63961EB091}.Release|ARM.ActiveCfg = Release|Any CPU
 		{E5265589-6731-4C5C-8FAD-1C63961EB091}.Release|x64.ActiveCfg = Release|Any CPU
 		{E5265589-6731-4C5C-8FAD-1C63961EB091}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Release|ARM.ActiveCfg = Release|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB135137-EF77-48AC-B802-A60A88F74B4B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

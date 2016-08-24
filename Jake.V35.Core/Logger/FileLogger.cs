@@ -20,9 +20,12 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     internal class FileLogger : ILogger
     {
-        private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
-        private static readonly Dictionary<string, StringBuilder> EmergencyWriteLogDirectory;
-        private static readonly Dictionary<string, object> FileLocks;
+        //private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
+        //private static readonly Dictionary<string, StringBuilder> EmergencyWriteLogDirectory;
+
+        private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
+        private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
+        //private static readonly Dictionary<string, object> FileLocks;
         public static ILogger Empty = new EmptyLogger();
 
         /// <summary>
@@ -38,12 +41,6 @@ namespace Jake.V35.Core.Logger
         
         private static bool _start = true;
         /// <summary>
-        /// 每写入10000次清理一次无用key
-        /// </summary>
-        private const int ResetCount = 10000;
-
-        private static int _currentCount = 0;
-        /// <summary>
         /// 一般日志
         /// </summary>
         private static System.Threading.Thread _writeThread;
@@ -54,9 +51,11 @@ namespace Jake.V35.Core.Logger
 
         static FileLogger()
         {
-            FileLocks = new Dictionary<string, object>();
-            WriteLogDirectory = new Dictionary<string, StringBuilder>();
-            EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
+            //FileLocks = new Dictionary<string, object>();
+            WriteLogDirectory = new Dictionary<string, IList<string>>();
+            EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
+            //WriteLogDirectory = new Dictionary<string, StringBuilder>();
+            //EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
             _writeAutoResetEvent = new AutoResetEvent(false);
             _emergencyWriteAutoResetEvent = new AutoResetEvent(false);
             _writeThread = new System.Threading.Thread(StartWriter);
@@ -107,127 +106,155 @@ namespace Jake.V35.Core.Logger
         private static void StartWriter(object parmameter)
         {
             var paras = (object[]) parmameter;
-            IDictionary<string, StringBuilder> dictionary = (IDictionary<string, StringBuilder>)paras[0];
+            IDictionary<string,IList<string>> dictionary = (IDictionary<string, IList<string>>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
             while (_start)
             {
-                autoResetEvent.WaitOne();
-                bool hasLog = false;
-                Monitor.Enter(dictionary);
-                string[] fileNames = dictionary.Keys.ToArray();
-                Monitor.Exit(dictionary);
-                foreach (var key in fileNames)
+                try
                 {
-                    hasLog = true;
+                    autoResetEvent.WaitOne();
+                    bool hasLog = false;
                     Monitor.Enter(dictionary);
-                    StringBuilder builder = dictionary[key];
+                    string[] fileNames = dictionary.Keys.ToArray();
                     Monitor.Exit(dictionary);
-                    if (builder.Length <= 0) continue;
-                    object o = AddLock(key);
-                    lock (o)
+                    foreach (var key in fileNames)
                     {
-                        var dir = Path.GetDirectoryName(key);
-                        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                        using (var logStreamWriter = new StreamWriter(key, true))
+                        hasLog = true;
+                        IList<string> logObjects;
+                        lock (dictionary)
                         {
-                            logStreamWriter.Write(builder.ToString());
-                            logStreamWriter.Flush();
-                        }
-                        builder.Remove(0, builder.Length);
-                        _currentCount++;
-                    }
-                }
-                if (!hasLog)
-                {
-                    autoResetEvent.Reset();
-                }
-                else if (_currentCount > ResetCount)
-                {
-                    Monitor.Enter(dictionary);
-                    List<string> keys = dictionary.Keys.ToList();
-                    Monitor.Exit(dictionary);
-                    lock (dictionary)
-                    {
-                        foreach (var key in keys)
-                        {
-                            lock (dictionary)
+                            logObjects = dictionary[key];
+                            lock (logObjects)
                             {
-                                if (dictionary[key].Length <= 0)
+                                if (!logObjects.Any())
                                 {
                                     dictionary.Remove(key);
-                                    lock (FileLocks)
-                                    {
-                                        if (FileLocks.ContainsKey(key))
-                                            FileLocks.Remove(key);
-                                    }
+                                    continue;
                                 }
                             }
                         }
+                        var dir = Path.GetDirectoryName(key);
+                        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                        lock (logObjects)
+                        {
+                            string content = logObjects.Aggregate("", (str1, str2) => str1 + str2);
+                            using (var logStreamWriter = new StreamWriter(key, true))
+                            {
+                                logStreamWriter.Write(content);
+                                logStreamWriter.Flush();
+                            }
+                            logObjects.Clear();
+                        }
                     }
+                    if (!hasLog)
+                    {
+                        autoResetEvent.Reset();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ILogger logger = FileLoggerFactory.Default.Create("LogError.log");
+                    logger.WriteError("日志写入出错:", exception);
                 }
             }
         }
         public bool WriteCore(LogType logType, string content, Exception exception, Func<string, Exception, string> formatter)
         {
-            string msg = formatter(content, exception);
-            string path = String.Format("{0}\\{1}\\{2}\\{3}", DirectoryName.TrimEnd('\\'),
-                 DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue(), FileName);
+            try
+            {
+                string msg = formatter(content, exception);
+                string directoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
+                    DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue());
+                string fileName = Path.Combine(directoryName, this.FileName);
+                //LogObject logObject = new LogObject
+                //{
+                //    Content = formatter(content, exception),
+                //    FileName = this.FileName,
+                //    DirectoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
+                //        DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue())
+                //};
+                //string msg = formatter(content, exception);
 
-            if (GetFileSize(logType,path) + Encoding.UTF8.GetBytes(content).Length / 1024 > 1024)
-            {
-                var fn = Path.GetFileNameWithoutExtension(path);
-                int index = fn.IndexOf("_", StringComparison.Ordinal);
-                if (index > 0)
+                //if (GetFileSize(logType, logObject.FullName) + Encoding.UTF8.GetBytes(content).Length/1024 > 1024)
+                //{
+                //    var fn = Path.GetFileNameWithoutExtension(logObject.FileName);
+                //    int index = fn.IndexOf("_", StringComparison.Ordinal);
+                //    if (index > 0)
+                //    {
+                //        fn = fn.Substring(0, index);
+                //    }
+                //    logObject.FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
+                //}
+                if (logType == LogType.Error)
                 {
-                    fn = fn.Substring(0, index);
-                }
-                FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
-                path = String.Format("{0}\\{1}\\{2}\\{3}", DirectoryName.TrimEnd('\\'),
-                    DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue(), FileName);
-            }
-            if (logType == LogType.Error)
-            {
-                //
-                Log(path, msg, WriteLogDirectory);
-                _writeAutoResetEvent.Set();
-            }
-            else
-            {
-                Log(path, msg, EmergencyWriteLogDirectory);
-                _emergencyWriteAutoResetEvent.Set();
-            }
-            return true;
-        }
-        private void Log(string fileName, string msg,IDictionary<string, StringBuilder> dictionary)
-        {
-                //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
-            lock (dictionary)
-            {
-                StringBuilder buffer;
-                if (dictionary.TryGetValue(fileName, out buffer))
-                {
-                    buffer.AppendLine(msg);
+                    //
+                    Log(fileName,msg, EmergencyWriteLogDirectory);
+                    _emergencyWriteAutoResetEvent.Set();
                 }
                 else
                 {
-                    dictionary.Add(fileName, new StringBuilder().AppendLine(msg));
+                    Log(fileName,msg, WriteLogDirectory);
+                    _writeAutoResetEvent.Set();
                 }
+                return true;
+
             }
-            AddLock(fileName);
-        }
-        private static object AddLock(string fileName)
-        {
-            object o;
-            lock (FileLocks)
+            catch (Exception ex)
             {
-                if (!FileLocks.TryGetValue(fileName,out o))
+                ILogger logger = FileLoggerFactory.Default.Create("LogError.log");
+                logger.WriteError("日志写入出错:", ex);
+                return false;
+            }
+        }
+
+        private void Log(string fileName, string msg, IDictionary<string, IList<string>> dictionary)
+        {
+            //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
+            IList<string> buffer;
+            lock (dictionary)
+            {
+                if (!dictionary.TryGetValue(fileName, out buffer))
                 {
-                    o = new object();
-                    FileLocks.Add(fileName, o);
+                    buffer = new List<string>();
+                    dictionary.Add(fileName, buffer);
                 }
             }
-            return o;
+            lock (buffer)
+            {
+                buffer.Add(msg);
+            }
         }
+        
+        //private void Log(string fileName, string msg,IDictionary<string, StringBuilder> dictionary)
+        //{
+        //        //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
+        //    lock (dictionary)
+        //    {
+        //        StringBuilder buffer;
+        //        if (dictionary.TryGetValue(fileName, out buffer))
+        //        {
+        //            buffer.AppendLine(msg);
+        //        }
+        //        else
+        //        {
+        //            dictionary.Add(fileName, new StringBuilder().AppendLine(msg));
+        //        }
+        //        AddLock(fileName);
+        //    }
+        //}
+        //private static object AddLock(string fileName)
+        //{
+        //    object o;
+        //    lock (FileLocks)
+        //    {
+        //        if (!FileLocks.TryGetValue(fileName,out o))
+        //        {
+        //            o = new object();
+        //            FileLocks.Add(fileName, o);
+        //        }
+        //    }
+        //    return o;
+        //}
 
         private static long GetFileSize(LogType logType,string fileName)
         {
@@ -237,15 +264,12 @@ namespace Jake.V35.Core.Logger
             {
                 lock (dictionary)
                 {
-                    AddLock(fileName);
-                    lock (FileLocks[fileName])
+                    using (var fileStream = new FileStream(fileName, FileMode.Open))
                     {
-                        using (var fileStream = new FileStream(fileName, FileMode.Open))
-                        {
-                            strRe = fileStream.Length/1024;
-                        }
+                        strRe = fileStream.Length/1024;
                     }
                 }
+
             }
             return strRe;
         }
