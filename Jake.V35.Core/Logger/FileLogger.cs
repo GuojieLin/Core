@@ -27,7 +27,6 @@ namespace Jake.V35.Core.Logger
         private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
         //private static readonly Dictionary<string, object> FileLocks;
         public static ILogger Empty = new EmptyLogger();
-
         /// <summary>
         /// FileLogger的别名
         /// </summary>

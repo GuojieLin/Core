@@ -14,7 +14,7 @@ namespace Jake.V35.Core.Logger
     /// <summary>
     /// Used to create logger instances of the given name.
     /// </summary>
-    public interface ILoggerFactory : ICreateLogger, IFindLogger
+    public interface ILoggerProvider : ICreateLogger
     {
 
     }

@@ -58,6 +58,7 @@
     <Compile Include="Logger\EmptyLogger.cs" />
     <Compile Include="Logger\FileLogger.cs" />
     <Compile Include="Logger\FileLoggerFactory.cs" />
+    <Compile Include="Logger\FileLoggerProvider.cs" />
     <Compile Include="Logger\ILog.cs" />
     <Compile Include="Logger\LoggerExtensions.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />
