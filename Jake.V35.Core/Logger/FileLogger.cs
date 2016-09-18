@@ -20,11 +20,11 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     internal class FileLogger : ILogger
     {
-        //private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
-        //private static readonly Dictionary<string, StringBuilder> EmergencyWriteLogDirectory;
+        private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
+        private static readonly Dictionary<string, StringBuilder> EmergencyWriteLogDirectory;
 
-        private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
-        private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
+        //private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
+        //private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
         //private static readonly Dictionary<string, object> FileLocks;
         public static ILogger Empty = new EmptyLogger();
         /// <summary>
@@ -51,10 +51,10 @@ namespace Jake.V35.Core.Logger
         static FileLogger()
         {
             //FileLocks = new Dictionary<string, object>();
-            WriteLogDirectory = new Dictionary<string, IList<string>>();
-            EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
-            //WriteLogDirectory = new Dictionary<string, StringBuilder>();
-            //EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
+            //WriteLogDirectory = new Dictionary<string, IList<string>>();
+            //EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
+            WriteLogDirectory = new Dictionary<string, StringBuilder>();
+            EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
             _writeAutoResetEvent = new AutoResetEvent(false);
             _emergencyWriteAutoResetEvent = new AutoResetEvent(false);
             _writeThread = new System.Threading.Thread(StartWriter);
@@ -105,7 +105,8 @@ namespace Jake.V35.Core.Logger
         private static void StartWriter(object parmameter)
         {
             var paras = (object[]) parmameter;
-            IDictionary<string,IList<string>> dictionary = (IDictionary<string, IList<string>>)paras[0];
+            //IDictionary<string,IList<string>> dictionary = (IDictionary<string, IList<string>>)paras[0];
+            IDictionary<string,StringBuilder> dictionary = (IDictionary<string, StringBuilder>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
             while (_start)
             {
@@ -119,30 +120,30 @@ namespace Jake.V35.Core.Logger
                     foreach (var key in fileNames)
                     {
                         hasLog = true;
-                        IList<string> logObjects;
+                        //IList<string> logObjects;
+                        StringBuilder logObjects;
                         lock (dictionary)
                         {
                             logObjects = dictionary[key];
-                            lock (logObjects)
+                            if (logObjects.Length <= 0)
+                                //if (!logObjects.Any())
                             {
-                                if (!logObjects.Any())
-                                {
-                                    dictionary.Remove(key);
-                                    continue;
-                                }
+                                dictionary.Remove(key);
+                                continue;
                             }
                         }
                         var dir = Path.GetDirectoryName(key);
                         if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                         lock (logObjects)
                         {
-                            string content = logObjects.Aggregate("", (str1, str2) => str1 + str2);
+                            string content = logObjects.ToString();//logObjects.Aggregate("", (str1, str2) => str1 + str2);
                             using (var logStreamWriter = new StreamWriter(key, true))
                             {
                                 logStreamWriter.Write(content);
                                 logStreamWriter.Flush();
                             }
-                            logObjects.Clear();
+                            logObjects.Remove(0, content.Length);
+                            //logObjects.Clear();
                         }
                     }
                     if (!hasLog)
@@ -206,22 +207,24 @@ namespace Jake.V35.Core.Logger
             }
         }
 
-        private void Log(string fileName, string msg, IDictionary<string, IList<string>> dictionary)
+        private void Log(string fileName, string msg, IDictionary<string, StringBuilder /*IList<string>*/> dictionary)
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
-            IList<string> buffer;
+            //IList<string> buffer;
+            StringBuilder buffer;
+
             lock (dictionary)
             {
                 if (!dictionary.TryGetValue(fileName, out buffer))
                 {
-                    buffer = new List<string>();
+                    buffer = new StringBuilder();
+                    //buffer = new List<string>();
                     dictionary.Add(fileName, buffer);
-                }
+                } 
+                    //buffer.Add(msg);
+                buffer.Append(msg);
             }
-            lock (buffer)
-            {
-                buffer.Add(msg);
-            }
+            
         }
         
         //private void Log(string fileName, string msg,IDictionary<string, StringBuilder> dictionary)

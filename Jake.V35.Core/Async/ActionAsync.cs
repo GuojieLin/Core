@@ -26,9 +26,16 @@ namespace Jake.V35.Core.Async
         }
         public override IAsyncResult Invoke()
         {
+            try { 
             var middle = _action.BeginInvoke(CompletedCallBack, null);
             SetAsyncResult(middle);
             return middle;
+            }
+            catch (Exception exception)
+            {
+                this.CatchException(exception);
+                return null;
+            }
         }
         public override void CompletedCallBack(IAsyncResult ar)
         {

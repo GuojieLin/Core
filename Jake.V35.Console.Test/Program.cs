@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Jake.V35.Core.Async;
 using Jake.V35.Core.Logger;
 
 namespace Jake.V35.Console.Test
@@ -45,7 +46,13 @@ namespace Jake.V35.Console.Test
     class Program
     {
         static void Main(string[] args)
+
         {
+            new Thread(AsyncTest2) {IsBackground = true}.Start();
+            
+            //AsyncTest2();
+            //AsyncTest3();
+            System.Console.ReadKey();
             //a a1 = new a(1,"abc");
             //a a2 = new a(2,"abc");
             //a a3= new a(2,"123");
@@ -122,6 +129,49 @@ namespace Jake.V35.Console.Test
             System.Console.ReadKey();
         }
 
+        private static void AsyncTest1()
+        {
+            ILogger logger = FileLoggerFactory.Default.Create(true, "AsyncTest1.txt");
+            List<Operator> operators  = new List<Operator>();
+            for (int i = 0; i < 100; i ++)
+            {
+                int j = i;
+                var @operator = Asynchronous.Create(() => { logger.WriteInfo(j.ToString()); });
+                operators.Add(@operator);
+            }
+            foreach (Operator t in operators)
+            {
+                t.Invoke();
+            }
+            while (true)
+            {
+                Thread.Sleep(1000);
+            }
+            //operators.ForEach(o => o.Invoke());
+        }
+        private static void AsyncTest2()
+        {
+            ILogger logger = FileLoggerFactory.Default.Create(true, "AsyncTest2.txt");
+            for (int i = 100; i < 200; i++)
+            {
+                int j = i;
+                Asynchronous.Invoke(() => { logger.WriteInfo(j.ToString()); });
+            }
+        }
+
+        private static void AsyncTest3()
+        {
+            ILogger logger = FileLoggerFactory.Default.Create(true, "AsyncTest3.txt");
+            for (int i = 200; i < 250; i++)
+            {
+                int j = i;
+                Asynchronous.Invoke(() => { logger.WriteInfo(j.ToString()); })
+                    .ContinueWithAsync(() =>
+                    {
+                        logger.WriteInfo((j * 2).ToString());
+                    });
+            }
+        }
         public static void Logger100000Test()
         {
             var loggerFactory = FileLoggerFactory.Default;
