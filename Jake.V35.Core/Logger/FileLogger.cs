@@ -31,8 +31,8 @@ namespace Jake.V35.Core.Logger
         /// FileLogger的别名
         /// </summary>
         public string FileName { get; set; }
-        private static AutoResetEvent _writeAutoResetEvent { get; set; }
-        private static AutoResetEvent _emergencyWriteAutoResetEvent { get; set; }
+        private static AutoResetEvent WriteAutoResetEvent { get; set; }
+        private static AutoResetEvent EmergencyWriteAutoResetEvent { get; set; }
         /// <summary>
         /// 路径
         /// </summary>
@@ -42,11 +42,11 @@ namespace Jake.V35.Core.Logger
         /// <summary>
         /// 一般日志
         /// </summary>
-        private static System.Threading.Thread _writeThread;
+        private static readonly System.Threading.Thread _writeThread;
         /// <summary>
         /// 错误日志另外处理，保证能实时记录
         /// </summary>
-        private static System.Threading.Thread _emergencyWriteThread;
+        private static readonly System.Threading.Thread _emergencyWriteThread;
 
         static FileLogger()
         {
@@ -55,16 +55,16 @@ namespace Jake.V35.Core.Logger
             //EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
             WriteLogDirectory = new Dictionary<string, StringBuilder>();
             EmergencyWriteLogDirectory = new Dictionary<string, StringBuilder>();
-            _writeAutoResetEvent = new AutoResetEvent(false);
-            _emergencyWriteAutoResetEvent = new AutoResetEvent(false);
+            WriteAutoResetEvent = new AutoResetEvent(false);
+            EmergencyWriteAutoResetEvent = new AutoResetEvent(false);
             _writeThread = new System.Threading.Thread(StartWriter);
             _emergencyWriteThread = new System.Threading.Thread(StartWriter);
 
             _writeThread.IsBackground = true;
             _emergencyWriteThread.IsBackground = true;
 
-            _writeThread.Start(new object[] { WriteLogDirectory, _writeAutoResetEvent });
-            _emergencyWriteThread.Start(new object[] { EmergencyWriteLogDirectory, _emergencyWriteAutoResetEvent });
+            _writeThread.Start(new object[] { WriteLogDirectory, WriteAutoResetEvent });
+            _emergencyWriteThread.Start(new object[] { EmergencyWriteLogDirectory, EmergencyWriteAutoResetEvent });
         }
         /// <summary>
         /// 使用一个明确的文件路径,若只有文件名则用默认
@@ -105,7 +105,6 @@ namespace Jake.V35.Core.Logger
         private static void StartWriter(object parmameter)
         {
             var paras = (object[]) parmameter;
-            //IDictionary<string,IList<string>> dictionary = (IDictionary<string, IList<string>>)paras[0];
             IDictionary<string,StringBuilder> dictionary = (IDictionary<string, StringBuilder>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
             while (_start)
@@ -129,6 +128,7 @@ namespace Jake.V35.Core.Logger
                                 //if (!logObjects.Any())
                             {
                                 dictionary.Remove(key);
+                                System.Threading.Thread.Sleep(1);
                                 continue;
                             }
                         }
@@ -139,8 +139,17 @@ namespace Jake.V35.Core.Logger
                             string content = logObjects.ToString();//logObjects.Aggregate("", (str1, str2) => str1 + str2);
                             using (var logStreamWriter = new StreamWriter(key, true))
                             {
-                                logStreamWriter.Write(content);
-                                logStreamWriter.Flush();
+                                try
+                                {
+                                    logStreamWriter.Write(content);
+                                    logStreamWriter.Flush();
+                                }
+                                catch(Exception exception)
+                                {
+                                    //由于磁盘空间满等原因写不进去
+                                    ILogger logger = FileLoggerFactory.Default.Create("LogError.log");
+                                    logger.WriteWarning("日志写入出错：", exception);
+                                }
                             }
                             logObjects.Remove(0, content.Length);
                             //logObjects.Clear();
@@ -150,11 +159,12 @@ namespace Jake.V35.Core.Logger
                     {
                         autoResetEvent.Reset();
                     }
+                    System.Threading.Thread.Sleep(1);
                 }
                 catch (Exception exception)
                 {
                     ILogger logger = FileLoggerFactory.Default.Create("LogError.log");
-                    logger.WriteError("日志写入出错:", exception);
+                    logger.WriteWarning("日志写入出错:", exception);
                 }
             }
         }
@@ -189,12 +199,12 @@ namespace Jake.V35.Core.Logger
                 {
                     //
                     Log(fileName,msg, EmergencyWriteLogDirectory);
-                    _emergencyWriteAutoResetEvent.Set();
+                    EmergencyWriteAutoResetEvent.Set();
                 }
                 else
                 {
                     Log(fileName,msg, WriteLogDirectory);
-                    _writeAutoResetEvent.Set();
+                    WriteAutoResetEvent.Set();
                 }
                 return true;
 
@@ -211,10 +221,10 @@ namespace Jake.V35.Core.Logger
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
             //IList<string> buffer;
-            StringBuilder buffer;
 
             lock (dictionary)
             {
+                StringBuilder buffer;
                 if (!dictionary.TryGetValue(fileName, out buffer))
                 {
                     buffer = new StringBuilder();
