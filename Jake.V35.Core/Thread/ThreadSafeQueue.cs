@@ -19,7 +19,8 @@ namespace Jake.V35.Core.Thread
         {
             lock (this)
             {
-                base.Enqueue(item);
+                base.Enqueue(item);  
+                //发送消息给所有等待对象
                 if (this.Count == 1) Monitor.PulseAll(this);
             }
         }
