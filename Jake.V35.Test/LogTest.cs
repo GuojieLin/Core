@@ -89,11 +89,10 @@ namespace Jake.V35.Test
             var loggerFactory = FileLoggerFactory.Default;
             ILogger logger2 = loggerFactory.Create("Testlarge.log");
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100000; i++)
             {
                 logger2.WriteError("测试2下".PadLeft(10000,'t'), new Exception("测试错误"));
             }
-
         }
         [TestMethod]
         public void LoggerMoreTest()

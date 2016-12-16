@@ -36,6 +36,19 @@ namespace Jake.V35.Core.Logger
                     error.Message, error.StackTrace);
 
         /// <summary>
+        /// Writes an debug log message.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message"></param>
+        public static void WriteDebug(this ILogger logger, string message)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            Debug.WriteLine(message);
+        }
+        /// <summary>
         /// Writes an informational log message.
         /// </summary>
         /// <param name="logger"></param>

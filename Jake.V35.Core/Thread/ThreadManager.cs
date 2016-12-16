@@ -176,7 +176,7 @@ namespace Jake.V35.Core.Thread
             {
                 for (int i = 0; i < num; i++)
                 {
-                    System.Threading.Thread thread = new System.Threading.Thread(OnWork) { IsBackground = isStart };
+                    System.Threading.Thread thread = new System.Threading.Thread(OnWork) { IsBackground = true };
                     _threads.Add(thread);
                     if (isStart)
                     {

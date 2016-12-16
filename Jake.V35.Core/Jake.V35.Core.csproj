@@ -65,9 +65,11 @@
     <Compile Include="Logger\LogType.cs" />
     <Compile Include="PerformaceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\CryptoServiceProviderHelper.cs" />
     <Compile Include="SerializeHelper.cs" />
     <Compile Include="Thread\ThreadManager.cs" />
     <Compile Include="Thread\ThreadSafeQueue.cs" />
+    <Compile Include="Thread\ThreadSafeStack.cs" />
     <Compile Include="Tuple\Interfaces\IStructuralComparable.cs" />
     <Compile Include="Tuple\Interfaces\IStructuralEquatable.cs" />
     <Compile Include="Tuple\Interfaces\ITuple.cs" />

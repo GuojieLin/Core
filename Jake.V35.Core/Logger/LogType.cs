@@ -13,6 +13,10 @@ namespace Jake.V35.Core.Logger
 {
     public enum LogType
     {
+        /// <summary>
+        /// 详细Debug日志
+        /// </summary>
+        [Value("InfoLogs")] Debug,
         [Value("InfoLogs")] Info,
         [Value("WarningLogs")] Warning,
         [Value("ErrorLogs")] Error

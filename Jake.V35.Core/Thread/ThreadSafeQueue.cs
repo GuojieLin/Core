@@ -15,6 +15,15 @@ namespace Jake.V35.Core.Thread
     /// <typeparam name="T"></typeparam>
     public class ThreadSafeQueue<T> : Queue<T>
     {
+        public ThreadSafeQueue(int capacity)
+            : base(capacity)
+        {
+        }
+
+        public ThreadSafeQueue(IEnumerable<T> iEnumerable)
+            : base(iEnumerable)
+        {
+        }
         public new void Enqueue(T item)
         {
             lock (this)
@@ -29,7 +38,8 @@ namespace Jake.V35.Core.Thread
         {
             lock (this)
             {
-                while (this.Count == 0)
+                if (this.Count == 0)
+                    //这里会释放锁
                     Monitor.Wait(this);
                 return base.Dequeue();
             }

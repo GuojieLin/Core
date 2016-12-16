@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -27,18 +28,10 @@ namespace Jake.V35.Core.Logger
         //private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
         //private static readonly Dictionary<string, object> FileLocks;
         public static ILogger Empty = new EmptyLogger();
-        /// <summary>
-        /// FileLogger的别名
-        /// </summary>
-        public string FileName { get; set; }
         private static AutoResetEvent WriteAutoResetEvent { get; set; }
         private static AutoResetEvent EmergencyWriteAutoResetEvent { get; set; }
-        /// <summary>
-        /// 路径
-        /// </summary>
-        public string DirectoryName { get; set; }
-        
         private static bool _start = true;
+
         /// <summary>
         /// 一般日志
         /// </summary>
@@ -47,6 +40,15 @@ namespace Jake.V35.Core.Logger
         /// 错误日志另外处理，保证能实时记录
         /// </summary>
         private static readonly System.Threading.Thread _emergencyWriteThread;
+        /// <summary>
+        /// 路径
+        /// </summary>
+        public string DirectoryName { get; set; }
+
+        /// <summary>
+        /// FileLogger的别名
+        /// </summary>
+        public string FileName { get; set; }
 
         static FileLogger()
         {
@@ -133,6 +135,7 @@ namespace Jake.V35.Core.Logger
                             }
                         }
                         var dir = Path.GetDirectoryName(key);
+                        Debug.Assert(dir != null);
                         if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                         lock (logObjects)
                         {
@@ -175,29 +178,9 @@ namespace Jake.V35.Core.Logger
                 string msg = formatter(content, exception);
                 string directoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
                     DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue());
-                string fileName = Path.Combine(directoryName, this.FileName);
-                //LogObject logObject = new LogObject
-                //{
-                //    Content = formatter(content, exception),
-                //    FileName = this.FileName,
-                //    DirectoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
-                //        DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue())
-                //};
-                //string msg = formatter(content, exception);
-
-                //if (GetFileSize(logType, logObject.FullName) + Encoding.UTF8.GetBytes(content).Length/1024 > 1024)
-                //{
-                //    var fn = Path.GetFileNameWithoutExtension(logObject.FileName);
-                //    int index = fn.IndexOf("_", StringComparison.Ordinal);
-                //    if (index > 0)
-                //    {
-                //        fn = fn.Substring(0, index);
-                //    }
-                //    logObject.FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
-                //}
+                string fileName = UpdateFileNameIfOutOfMaxSize(logType, content, directoryName);
                 if (logType == LogType.Error)
                 {
-                    //
                     Log(fileName,msg, EmergencyWriteLogDirectory);
                     EmergencyWriteAutoResetEvent.Set();
                 }
@@ -215,6 +198,59 @@ namespace Jake.V35.Core.Logger
                 logger.WriteError("日志写入出错:", ex);
                 return false;
             }
+        }
+        /// <summary>
+        /// 若文件查过最大配置的大小，则还一个文件写
+        /// </summary>
+        /// <param name="logType"></param>
+        /// <param name="content"></param>
+        /// <param name="directoryName"></param>
+        /// <returns></returns>
+        private string UpdateFileNameIfOutOfMaxSize(LogType logType, string content, string directoryName)
+        {
+            string fileName = Path.Combine(directoryName, this.FileName);
+            double totalSize = GetFileSize(logType, fileName) +
+                             Encoding.UTF8.GetBytes(content).Length / 1024 +
+                             GetQueueBufferSize(fileName);
+            if (totalSize > 1024 * 5)
+            {
+                var fn = Path.GetFileNameWithoutExtension(this.FileName);
+                Debug.Assert(fn != null);
+                int index = fn.IndexOf("_", StringComparison.Ordinal);
+                if (index > 0)
+                {
+                    fn = fn.Substring(0, index);
+                }
+                this.FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
+                fileName = Path.Combine(directoryName, this.FileName);
+            }
+            return fileName;
+        }
+
+        /// <summary>
+        /// 获取队列当前缓存的字符大小
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private double GetQueueBufferSize(string fileName)
+        {
+            int bufferLength = 0;
+            bufferLength += GetStringBuilderLengthByFileName(WriteLogDirectory, fileName);
+            bufferLength += GetStringBuilderLengthByFileName(EmergencyWriteLogDirectory, fileName);
+            return bufferLength/1024.0;
+        }
+
+        private int GetStringBuilderLengthByFileName(Dictionary<string, StringBuilder> writeLogDirectory,string fileName)
+        {
+            lock (WriteLogDirectory)
+            {
+                StringBuilder builder;
+                if (writeLogDirectory.TryGetValue(fileName, out builder))
+                {
+                    return builder.Length;
+                }
+            }
+            return 0;
         }
 
         private void Log(string fileName, string msg, IDictionary<string, StringBuilder /*IList<string>*/> dictionary)
@@ -270,18 +306,22 @@ namespace Jake.V35.Core.Logger
 
         private static long GetFileSize(LogType logType,string fileName)
         {
-            IDictionary dictionary = logType == LogType.Error ? EmergencyWriteLogDirectory : WriteLogDirectory;
+            IDictionary<string,StringBuilder> dictionary = logType == LogType.Error ? EmergencyWriteLogDirectory : WriteLogDirectory;
+            StringBuilder builder;
             long strRe = 0;
-            if (File.Exists(fileName))
+            if (dictionary.TryGetValue(fileName, out builder))
             {
-                lock (dictionary)
+                if (File.Exists(fileName))
                 {
-                    using (var fileStream = new FileStream(fileName, FileMode.Open))
+                    lock (builder)
                     {
-                        strRe = fileStream.Length/1024;
+                        using (var fileStream = new FileStream(fileName, FileMode.Open))
+                        {
+                            strRe = fileStream.Length/1024;
+                        }
                     }
-                }
 
+                }
             }
             return strRe;
         }
