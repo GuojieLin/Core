@@ -15,6 +15,9 @@ namespace Jake.V35.Core.Thread
     /// <typeparam name="T"></typeparam>
     public class ThreadSafeQueue<T> : Queue<T>
     {
+        public ThreadSafeQueue()
+        {
+        }
         public ThreadSafeQueue(int capacity)
             : base(capacity)
         {

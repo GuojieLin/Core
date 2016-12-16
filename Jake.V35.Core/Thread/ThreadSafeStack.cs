@@ -5,6 +5,9 @@ namespace Jake.V35.Core.Thread
 {
     public class ThreadSafeStack<T> : Stack<T>
     {
+        public ThreadSafeStack()
+        {
+        }
         public ThreadSafeStack(int capacity)
             : base(capacity)
         {
