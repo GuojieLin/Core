@@ -73,7 +73,7 @@ namespace Jake.V35.Core.Async
     }
     public class FuncAsync<T1, TResult> : FuncAsync<TResult>
     {
-        protected readonly T1 Parameter1;
+        public T1 Parameter1 { get; protected set; }
         private readonly Func<T1, TResult> _func;
 
         public FuncAsync(Func<T1, TResult> action, T1 parameter1)
@@ -111,7 +111,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, TResult> : FuncAsync<T1, TResult>
     {
         private readonly Func<T1, T2, TResult> _func;
-        protected T2 Parameter2;
+        public T2 Parameter2 { get; protected set; }
         public FuncAsync(Func<T1, T2, TResult> func, T1 parameter1, T2 parameter2)
             : this(parameter1, parameter2)
         {
@@ -148,7 +148,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3, TResult> : FuncAsync<T1, T2, TResult>
     {
         private readonly Func<T1, T2, T3, TResult> _func;
-        protected T3 Parameter3;
+        public T3 Parameter3 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3)
             : this(parameter1, parameter2, parameter3)
@@ -188,7 +188,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3,T4, TResult> : FuncAsync<T1, T2,T3, TResult>
     {
         private readonly Func<T1, T2, T3, T4, TResult> _func;
-        protected T4 Parameter4;
+        public T4 Parameter4 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3,T4, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3,T4 parameter4)
             : this(parameter1, parameter2, parameter3, parameter4)
@@ -227,7 +227,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3, T4,T5, TResult> : FuncAsync<T1, T2, T3,T4, TResult>
     {
         private readonly Func<T1, T2, T3, T4,T5, TResult> _func;
-        protected T5 Parameter5;
+        public T5 Parameter5 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3, T4, T5, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5)
             : this(parameter1, parameter2, parameter3, parameter4, parameter5)
@@ -266,7 +266,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3, T4, T5, T6, TResult> : FuncAsync<T1, T2, T3, T4, T5, TResult>
     {
         private readonly Func<T1, T2, T3, T4,T5,T6, TResult> _func;
-        protected T6 Parameter6;
+        public T6 Parameter6 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3, T4, T5, T6, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6)
             : this(parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
@@ -307,7 +307,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3, T4, T5, T6, T7, TResult> : FuncAsync<T1, T2, T3, T4, T5, T6, TResult>
     {
         private readonly Func<T1, T2, T3, T4,T5,T6, T7,  TResult> _func;
-        protected T7 Parameter7;
+        public T7 Parameter7 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3, T4, T5, T6, T7, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3,
             T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7)
@@ -349,7 +349,7 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<T1, T2, T3, T4, T5, T6, T7, T8, TResult> : FuncAsync<T1, T2, T3, T4, T5, T6,T7, TResult>
     {
         private readonly Func<T1, T2, T3, T4,T5,T6, T7,T8,  TResult> _func;
-        protected T8 Parameter8;
+        public T8 Parameter8 { get; protected set; }
 
         public FuncAsync(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func, T1 parameter1, T2 parameter2, T3 parameter3,
             T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7, T8 parameter8)

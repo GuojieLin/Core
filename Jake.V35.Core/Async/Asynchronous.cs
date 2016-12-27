@@ -34,6 +34,13 @@ namespace Jake.V35.Core.Async
                 @operator.Wait();
             }
         }
+        public static void WaitAll(params Operator[] @operators)
+        {
+            foreach (var @operator in @operators)
+            {
+                @operator.Wait();
+            }
+        }
         #region Action
         
         public static Operator Invoke(Action action)
@@ -55,7 +62,6 @@ namespace Jake.V35.Core.Async
         {
             ActionAsync<T> @operator = new ActionAsync<T>(action, parameter);
             @operator.Invoke();
-
             return @operator;
         }
 
@@ -235,13 +241,6 @@ namespace Jake.V35.Core.Async
         public static IEnumerable<FuncAsync<TParameter, TResult>> Foreach<TParameter, TResult>(IEnumerable<TParameter> items, Func<TParameter, TResult> func)
         {
             return items.Select(parameter => Invoke(func, parameter)).ToList();
-            //不能用yield 否则如果不出发,就不会调用方法
-            //foreach (var item in items)
-            //{
-            //    if(stop) yield break;
-            //    var i = item;
-            //    yield return Invoke(func, i);
-            //}
         }
 
         #endregion
@@ -252,38 +251,38 @@ namespace Jake.V35.Core.Async
         /// <param name="action"></param>
         /// <param name="operators"></param>
         /// <returns></returns>
-        public static Operator ContinueWithAsync(IEnumerable<Operator>operators, Action action)
+        public static ActionAsync ContinueWithAsync(IEnumerable<Operator> operators, Action action)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(action);
+            ActionAsync next = Invoke(WaitAll, operators).ContinueWithAsync(action);
             return next;
         }
-        public static Operator ContinueWithAsync(IEnumerable<Operator> operators, Action<Operator> action)
+        public static ActionAsync<Operator> ContinueWithAsync(IEnumerable<Operator> operators, Action<Operator> action)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(action);
+            ActionAsync<Operator> next = Invoke(WaitAll, operators).ContinueWithAsync(action);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter>(IEnumerable<Operator> operators, Action<Operator,TParameter> action, TParameter parameter)
+        public static ActionAsync<Operator, TParameter> ContinueWithAsync<TParameter>(IEnumerable<Operator> operators, Action<Operator, TParameter> action, TParameter parameter)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(action, parameter);
+            ActionAsync<Operator,TParameter> next = Invoke(WaitAll, operators).ContinueWithAsync(action, parameter);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2>(IEnumerable<Operator> operators, Action<Operator, TParameter1, TParameter2> action, TParameter1 parameter1, TParameter2 parameter2)
+        public static ActionAsync<Operator, TParameter1, TParameter2> ContinueWithAsync<TParameter1, TParameter2>(IEnumerable<Operator> operators, Action<Operator, TParameter1, TParameter2> action, TParameter1 parameter1, TParameter2 parameter2)
         {
-            Operator next = Invoke(WaitAll, operators)
+            ActionAsync<Operator,TParameter1,TParameter2>  next = Invoke(WaitAll, operators)
                 .ContinueWithAsync(action, parameter1, parameter2);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3>
+        public static ActionAsync<Operator, TParameter1, TParameter2, TParameter3> ContinueWithAsync<TParameter1, TParameter2, TParameter3>
             (IEnumerable<Operator> operators, Action<Operator, TParameter1, TParameter2, TParameter3> action, 
             TParameter1 parameter1, 
             TParameter2 parameter2,
             TParameter3 parameter3)
         {
-            Operator next = Invoke(WaitAll, operators)
+            ActionAsync<Operator, TParameter1, TParameter2, TParameter3> next = Invoke(WaitAll, operators)
                 .ContinueWithAsync(action, parameter1, parameter2, parameter3);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>
+        public static ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4> ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4>
             (IEnumerable<Operator> operators,
             Action<Operator, TParameter1, TParameter2, TParameter3, TParameter4> action,
             TParameter1 parameter1,
@@ -291,7 +290,7 @@ namespace Jake.V35.Core.Async
             TParameter3 parameter3, 
             TParameter4 parameter4)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(action, parameter1, parameter2, parameter3, parameter4);
+            ActionAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4>  next = Invoke(WaitAll, operators).ContinueWithAsync(action, parameter1, parameter2, parameter3, parameter4);
             
             return next;
         }
@@ -304,60 +303,67 @@ namespace Jake.V35.Core.Async
         /// <param name="func"></param>
         /// <param name="operators"></param>
         /// <returns></returns>
-        public static Operator ContinueWithAsync<TResult>(IEnumerable<Operator> operators,Func<TResult> func)
+        public static FuncAsync<TResult> ContinueWithAsync<TResult>(IEnumerable<Operator> operators, Func<TResult> func)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(func);
+            FuncAsync<TResult> next = Invoke(WaitAll, operators).ContinueWithAsync(func);
             
             return next;
         }
-        public static Operator ContinueWithAsync<TResult>(IEnumerable<Operator> operators, Func<Operator,TResult> func)
+        public static FuncAsync<Operator, TResult> ContinueWithAsync<TResult>(IEnumerable<Operator> operators, Func<Operator, TResult> func)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(func);
-            
+            FuncAsync<Operator, TResult> next = Invoke(WaitAll, operators).ContinueWithAsync(func);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter, TResult>(IEnumerable<Operator> operators,
+        public static FuncAsync<Operator, TParameter, TResult> ContinueWithAsync<TParameter, TResult>(IEnumerable<Operator> operators,
             Func<Operator,TParameter, TResult> func, TParameter parameter)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(func, parameter);
+            FuncAsync<Operator, TParameter, TResult>  next = Invoke(WaitAll, operators).ContinueWithAsync(func, parameter);
             
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2, TResult>
+
+        public static FuncAsync<Operator, TParameter1, TParameter2, TResult> ContinueWithAsync
+            <TParameter1, TParameter2, TResult>
             (IEnumerable<Operator> operators,
-            Func<Operator, TParameter1, TParameter2, TResult> func, 
-            TParameter1 parameter1,
-            TParameter2 parameter2)
+                Func<Operator, TParameter1, TParameter2, TResult> func,
+                TParameter1 parameter1,
+                TParameter2 parameter2)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(func, parameter1, parameter2);
-            
+            FuncAsync<Operator, TParameter1, TParameter2, TResult> next =
+                Invoke(WaitAll, operators)
+                    .ContinueWithAsync(func, parameter1, parameter2);
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>
+
+        public static FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TResult> ContinueWithAsync<TParameter1, TParameter2, TParameter3, TResult>
             (IEnumerable<Operator> operators,
             Func<Operator, TParameter1, TParameter2, TParameter3, TResult> func,
             TParameter1 parameter1,
             TParameter2 parameter2,
             TParameter3 parameter3)
         {
-            Operator next = Invoke(WaitAll, operators).ContinueWithAsync(func, parameter1, parameter2, parameter3);
+            FuncAsync<Operator, TParameter1, TParameter2,TParameter3, TResult>  next = Invoke(WaitAll, operators).ContinueWithAsync(func, parameter1, parameter2, parameter3);
             
             return next;
         }
-        public static Operator ContinueWithAsync<TParameter1, TParameter2, TParameter3, TParameter4, TResult>
+
+        public static FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> ContinueWithAsync
+            <TParameter1, TParameter2, TParameter3, TParameter4, TResult>
             (IEnumerable<Operator> operators,
-            Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
-            TParameter1 parameter1,
-            TParameter2 parameter2,
-            TParameter3 parameter3,
-            TParameter4 parameter4)
+                Func<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> func,
+                TParameter1 parameter1,
+                TParameter2 parameter2,
+                TParameter3 parameter3,
+                TParameter4 parameter4)
         {
-            Operator next = Invoke(WaitAll, operators)
+
+            FuncAsync<Operator, TParameter1, TParameter2, TParameter3, TParameter4, TResult> next = 
+                Invoke(WaitAll,operators)
                 .ContinueWithAsync(func, parameter1, parameter2, parameter3, parameter4);
-            
             return next;
             //TODO:BUG CotinueWithAsync之后无法调用Wait等待
         }
+
         #endregion
     }
 }

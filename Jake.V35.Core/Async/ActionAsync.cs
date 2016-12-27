@@ -24,12 +24,14 @@ namespace Jake.V35.Core.Async
         {
             this._action = action;
         }
+
         public override IAsyncResult Invoke()
         {
-            try { 
-            var middle = _action.BeginInvoke(CompletedCallBack, null);
-            SetAsyncResult(middle);
-            return middle;
+            try
+            {
+                var middle = _action.BeginInvoke(CompletedCallBack, null);
+                SetAsyncResult(middle);
+                return middle;
             }
             catch (Exception exception)
             {
@@ -37,6 +39,7 @@ namespace Jake.V35.Core.Async
                 return null;
             }
         }
+
         public override void CompletedCallBack(IAsyncResult ar)
         {
             try
@@ -53,9 +56,8 @@ namespace Jake.V35.Core.Async
 
     public class ActionAsync<T> : ActionAsync
     {
-        public T Result;
         private readonly Action<T> _action;
-        protected readonly T Parameter1;
+        public T Parameter1 { get; protected set; }
         public ActionAsync()
         {
         }
@@ -90,9 +92,8 @@ namespace Jake.V35.Core.Async
     }
     public class ActionAsync<T1, T2> : ActionAsync<T1>
     {
-        protected readonly T2 Parameter2;
         private readonly Action<T1, T2> _action;
-
+        public T2 Parameter2 { get; protected set; }
         public ActionAsync(Action<T1, T2> action, T1 parameter1, T2 parameter2)
             : this(parameter1, parameter2)
         {
@@ -120,7 +121,6 @@ namespace Jake.V35.Core.Async
             try
             {
                 _action.EndInvoke(ar);
-
             }
             catch (Exception exception)
             {
@@ -132,7 +132,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3> : ActionAsync<T1, T2>
     {
         private readonly Action<T1, T2, T3> _action;
-        protected T3 Parameter3;
+        public T3 Parameter3 { get; protected set; }
         public ActionAsync(Action<T1, T2, T3> action, T1 parameter1, T2 parameter2, T3 parameter3)
             : this(parameter1, parameter2, parameter3)
         {
@@ -167,7 +167,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3,T4> : ActionAsync<T1, T2,T3>
     {
         private readonly Action<T1, T2, T3,T4> _action;
-        protected T4 Parameter4;
+        public T4 Parameter4 { get; protected set; }
         public ActionAsync(Action<T1, T2, T3,T4> action, T1 parameter1, T2 parameter2, T3 parameter3, T4 parameter4)
             : this(parameter1, parameter2, parameter3, parameter4)
         {
@@ -203,7 +203,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3, T4,T5> : ActionAsync<T1, T2, T3, T4>
     {
         private readonly Action<T1, T2, T3,T4,T5> _action;
-        protected T5 Parameter5;
+        public T5 Parameter5 { get; protected set; }
         public ActionAsync(Action<T1, T2, T3, T4, T5> action, T1 parameter1, T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5)
             : this(parameter1, parameter2, parameter3, parameter4, parameter5)
         {
@@ -239,7 +239,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3, T4, T5, T6> : ActionAsync<T1, T2, T3, T4, T5>
     {
         private readonly Action<T1, T2, T3,T4,T5,T6> _action;
-        protected T6 Parameter6;
+        public T6 Parameter6 { get; protected set; }
         public ActionAsync(Action<T1, T2, T3, T4, T5, T6> action, T1 parameter1, T2 parameter2, T3 parameter3, T4 parameter4, T5 parameter5, T6 parameter6)
             : this(parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
         {
@@ -276,7 +276,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3, T4, T5, T6, T7> : ActionAsync<T1, T2, T3, T4, T5, T6>
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7> _action;
-        protected T7 Parameter7;
+        public T7 Parameter7 { get; protected set; }
 
         public ActionAsync(Action<T1, T2, T3, T4, T5, T6, T7> action, T1 parameter1, T2 parameter2, T3 parameter3,
             T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7)
@@ -318,7 +318,7 @@ namespace Jake.V35.Core.Async
     public class ActionAsync<T1, T2, T3, T4, T5, T6, T7, T8> : ActionAsync<T1, T2, T3, T4, T5, T6, T7>
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> _action;
-        protected T8 Parameter8;
+        public T8 Parameter8 { get; protected set; }
 
         public ActionAsync(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 parameter1, T2 parameter2, T3 parameter3,
             T4 parameter4, T5 parameter5, T6 parameter6, T7 parameter7, T8 parameter8)
