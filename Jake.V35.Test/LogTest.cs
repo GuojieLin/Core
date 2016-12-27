@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Jake.V35.Core.Logger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -124,6 +125,26 @@ namespace Jake.V35.Test
                 logger1.WriteInfo("测试more1下");
                 logger2.WriteInfo("测试more2下");
             }
+        }
+
+        [TestMethod]
+        public void LoggerMoreWrite()
+        {
+            for (int i = 0; i < 1; i++)
+            {
+                Thread t = new Thread(() =>
+                {
+                    while (true)
+                    {
+                        ILogger logger1 = FileLoggerFactory.Default.Create("TestMore.log");
+                        logger1.WriteInfo("test");
+                        Thread.Sleep(1);
+                    }
+                });
+                t.IsBackground = true;
+                t.Start();
+            }
+            while(true) Thread.Sleep(1000);
         }
     }
 }

@@ -136,12 +136,8 @@ namespace Jake.V35.Console.Test
             for (int i = 0; i < 100; i ++)
             {
                 int j = i;
-                var @operator = Asynchronous.Create(() => { logger.WriteInfo(j.ToString()); });
+                var @operator = Asynchronous.Invoke(() => { logger.WriteInfo(j.ToString()); });
                 operators.Add(@operator);
-            }
-            foreach (Operator t in operators)
-            {
-                t.Invoke();
             }
             while (true)
             {
