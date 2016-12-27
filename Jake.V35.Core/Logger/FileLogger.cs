@@ -19,7 +19,7 @@ namespace Jake.V35.Core.Logger
     /// <summary>
     /// 2016.08.5 删除键和获取文件大小是对dictionary加锁
     /// </summary>
-    internal class FileLogger : ILogger
+    internal class FileLogger : ILogger,IDisposable
     {
         private static readonly Dictionary<string, StringBuilder> WriteLogDirectory;
         private static readonly Dictionary<string, StringBuilder> EmergencyWriteLogDirectory;
@@ -31,7 +31,7 @@ namespace Jake.V35.Core.Logger
         private static AutoResetEvent WriteAutoResetEvent { get; set; }
         private static AutoResetEvent EmergencyWriteAutoResetEvent { get; set; }
         private static bool _start = true;
-
+        private static bool _isDispose = false;
         /// <summary>
         /// 一般日志
         /// </summary>
@@ -106,6 +106,7 @@ namespace Jake.V35.Core.Logger
 
         private static void StartWriter(object parmameter)
         {
+            if (_isDispose) throw new Exception("日志服务已经释放");
             var paras = (object[]) parmameter;
             IDictionary<string,StringBuilder> dictionary = (IDictionary<string, StringBuilder>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
@@ -175,6 +176,7 @@ namespace Jake.V35.Core.Logger
         {
             try
             {
+                if(_isDispose) throw new Exception("日志服务已经释放");
                 string msg = formatter(content, exception);
                 string directoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
                     DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue());
@@ -325,5 +327,23 @@ namespace Jake.V35.Core.Logger
             }
             return strRe;
         }
+
+        void IDisposable.Dispose()
+        {
+            Dispose();
+        }
+        public static void Dispose()
+        {
+            while (WriteLogDirectory.Count > 0 || EmergencyWriteLogDirectory.Count > 0)
+            {
+                //等待日志写完
+                System.Threading.Thread.Sleep(10);
+            }
+            _start = false;
+            _isDispose = true;
+            EmergencyWriteAutoResetEvent = null;
+            WriteAutoResetEvent = null;
+        }
+
     }
 }

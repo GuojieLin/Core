@@ -14,7 +14,7 @@ namespace Jake.V35.Core.Logger
     /// <summary>
     /// Used to create logger instances of the given name.
     /// </summary>
-    public interface ILoggerProvider : ICreateLogger
+    public interface ILoggerProvider : ICreateLogger, ICloseLogger
     {
 
     }
@@ -36,19 +36,12 @@ namespace Jake.V35.Core.Logger
         /// <returns></returns>
         ILogger Create(bool useDefaultRoot, params string[] names);
     }
-    public interface IFindLogger
+    public interface ICloseLogger
     {
         /// <summary>
-        /// Creates a new ILogger instance of the given name.
+        /// Close Log Service.
         /// </summary>
-        /// <param name="name"></param>
         /// <returns></returns>
-        ILogger Find(string name);
-        /// <summary>
-        /// Creates a new ILogger instance of the given name.
-        /// </summary>
-        /// <param name="names"></param>
-        /// <returns></returns>
-        ILogger Find(params string[] names);
+        void Close();
     }
 }

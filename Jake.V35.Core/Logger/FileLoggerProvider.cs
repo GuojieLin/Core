@@ -34,5 +34,11 @@ namespace Jake.V35.Core.Logger
             var logger = new FileLogger(useDefaultRoot, names);
             return logger;
         }
+
+        public void Close()
+        {
+            //释放日志服务
+            FileLogger.Dispose();
+        }
     }
 }

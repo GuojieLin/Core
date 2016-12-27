@@ -58,5 +58,10 @@ namespace Jake.V35.Core.Logger
         {
             return _fileLoggerProvider.Create(useDefaultRoot,names);
         }
+
+        public void Close()
+        {
+            _fileLoggerProvider.Close();
+        }
     }
 }
