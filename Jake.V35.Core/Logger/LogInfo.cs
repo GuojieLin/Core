@@ -17,7 +17,7 @@ namespace Jake.V35.Core.Logger
     public class LogInfo
     {
         public static object _syncLock = new object();
-        public const int MaxSize = 1024*10;
+        public const int MaxSize = 1024 * 1024 * 5;
         public LogInfo(string dictionaryName,string fileName)
         {
             StringBuilder = new StringBuilder(1024);
@@ -52,7 +52,7 @@ namespace Jake.V35.Core.Logger
             {
                 var fn = Path.GetFileNameWithoutExtension(FileName);
                 Debug.Assert(fn != null);
-                int index = fn.IndexOf("_", StringComparison.Ordinal);
+                int index = fn.LastIndexOf("_", StringComparison.OrdinalIgnoreCase);
                 if (index > 0)
                 {
                     fn = fn.Substring(0, index);
@@ -81,7 +81,9 @@ namespace Jake.V35.Core.Logger
                     }
                     if (temp <= 0)
                     {
+                        string oldName = this.FileName;
                         GetNewName();
+                        Debug.Assert(oldName != FileName);
                         //恢复偏移量
                         Interlocked.Exchange(ref _offset, 0);
                     }
