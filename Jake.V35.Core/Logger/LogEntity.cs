@@ -14,32 +14,30 @@ using System.Threading;
 //======================================================//
 namespace Jake.V35.Core.Logger
 {
-    public class LogInfo
+    public class LogEntity:IDisposable
     {
         public static object _syncLock = new object();
         public const int MaxSize = 1024 * 1024 * 5;
-        public LogInfo(string dictionaryName,string fileName)
+        public LogEntity(string dictionaryName, string fileName)
         {
             StringBuilder = new StringBuilder(1024);
             DictionaryName = dictionaryName;
             FileName = fileName;
         }
-        public string FileName { get; private set;}
+        public string FileName { get; private set; }
         public string DictionaryName { get; private set; }
         public string FullName { get { return Path.Combine(DictionaryName, FileName); } }
-        /// <summary>
-        /// 当前长度
-        /// </summary>
-        public long Length { get; private set; }
-
+        private bool _isDispose=false;
         /// <summary>
         /// 实际偏移量，即当前实际写下的日志长度，不用读取文件也可以知道实际大小
         /// </summary>
         private int _offset;
         public StringBuilder StringBuilder { get; private set; }
+        public int Length { get { return StringBuilder.Length; } }
 
         public void Append(string msg)
         {
+            if(_isDispose) throw new Exception("当前对象已释放");
             lock (this)
             {
                 StringBuilder.Append(msg);
@@ -60,11 +58,10 @@ namespace Jake.V35.Core.Logger
                 this.FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
             }
         }
-
         public void Write()
         {
+            if (_isDispose) throw new Exception("当前对象已释放");
             int temp = 0;
-
             lock (this)
             {
                 do
@@ -89,9 +86,7 @@ namespace Jake.V35.Core.Logger
                     }
                 } while (temp <= 0);
             }
-            var dir = Path.GetDirectoryName(DictionaryName);
-            Debug.Assert(dir != null);
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            EnsureDirectory();
             using (var logStreamWriter = new StreamWriter(FullName, true, Encoding.UTF8))
             {
                 logStreamWriter.Write(StringBuilder.ToString(0, temp));
@@ -104,6 +99,24 @@ namespace Jake.V35.Core.Logger
             //当前偏移量达到最大，则更换日志名称
             Interlocked.Add(ref _offset, temp);
         }
-
+        private void EnsureDirectory()
+        {
+            var dir = Path.GetDirectoryName(DictionaryName);
+            Debug.Assert(dir != null);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir); 
+        }
+        public void Dispose()
+        {
+            if(!_isDispose) throw new Exception("当前对象已释放");
+            Dispose(true);
+        }
+        private void Dispose(bool dispose = true)
+        {
+            if(dispose)
+            {
+                this.Write();
+                _isDispose = true;
+            }
+        }
     }
 }

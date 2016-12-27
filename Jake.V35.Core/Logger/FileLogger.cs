@@ -21,8 +21,8 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     internal class FileLogger : ILogger,IDisposable
     {
-        private static readonly Dictionary<string, LogInfo> WriteLogDirectory;
-        private static readonly Dictionary<string, LogInfo> EmergencyWriteLogDirectory;
+        private static readonly Dictionary<string, LogEntity> WriteLogDirectory;
+        private static readonly Dictionary<string, LogEntity> EmergencyWriteLogDirectory;
 
         //private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
         //private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
@@ -55,8 +55,8 @@ namespace Jake.V35.Core.Logger
             //FileLocks = new Dictionary<string, object>();
             //WriteLogDirectory = new Dictionary<string, IList<string>>();
             //EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
-            WriteLogDirectory = new Dictionary<string, LogInfo>();
-            EmergencyWriteLogDirectory = new Dictionary<string, LogInfo>();
+            WriteLogDirectory = new Dictionary<string, LogEntity>();
+            EmergencyWriteLogDirectory = new Dictionary<string, LogEntity>();
             WriteAutoResetEvent = new AutoResetEvent(false);
             EmergencyWriteAutoResetEvent = new AutoResetEvent(false);
             _writeThread = new System.Threading.Thread(StartWriter);
@@ -108,7 +108,7 @@ namespace Jake.V35.Core.Logger
         {
             if (_isDispose) throw new Exception("日志服务已经释放");
             var paras = (object[]) parmameter;
-            IDictionary<string,LogInfo> dictionary = (IDictionary<string, LogInfo>)paras[0];
+            IDictionary<string,LogEntity> dictionary = (IDictionary<string, LogEntity>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
             while (_start)
             {
@@ -121,12 +121,13 @@ namespace Jake.V35.Core.Logger
                     Monitor.Exit(dictionary);
                     foreach (var key in fileNames)
                     {
-                        LogInfo logObjects;
+                        LogEntity logEntity;
                         lock (dictionary)
                         {
-                            logObjects = dictionary[key];
-                            if (logObjects.StringBuilder.Length <= 0)
+                            logEntity = dictionary[key];
+                            if (logEntity.Length<= 0)
                             {
+                                //移除对象
                                 dictionary.Remove(key);
                                 System.Threading.Thread.Sleep(1);
                                 continue;
@@ -135,7 +136,7 @@ namespace Jake.V35.Core.Logger
                         hasLog = true;
                         try
                         {
-                            logObjects.Write();
+                            logEntity.Write();
                         }
                         catch (Exception exception)
                         {
@@ -148,12 +149,15 @@ namespace Jake.V35.Core.Logger
                     {
                         autoResetEvent.Reset();
                     }
-                    System.Threading.Thread.Sleep(1);
                 }
                 catch (Exception exception)
                 {
                     ILogger logger = FileLoggerFactory.Default.Create("LogError.log");
                     logger.WriteWarning("日志写入出错:", exception);
+                }
+                finally
+                {
+                    System.Threading.Thread.Sleep(1);
                 }
             }
         }
@@ -187,16 +191,16 @@ namespace Jake.V35.Core.Logger
         }
 
 
-        private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogInfo /*IList<string>*/> dictionary)
+        private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogEntity /*IList<string>*/> dictionary)
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
             string fullName = Path.Combine(dictionaryName, this.FileName);
             lock (dictionary)
             {
-                LogInfo logInfo;
+                LogEntity logInfo;
                 if (!dictionary.TryGetValue(fullName, out logInfo))
                 {
-                    logInfo = new LogInfo(dictionaryName, fileName);
+                    logInfo = new LogEntity(dictionaryName, fileName);
                     dictionary.Add(fullName, logInfo);
                 } 
                 logInfo.Append(msg);
