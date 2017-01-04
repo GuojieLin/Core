@@ -40,15 +40,6 @@ namespace Jake.V35.Core.Async
         public virtual void Wait()
         {
             if (!Middle.IsCompleted) Middle.AsyncWaitHandle.WaitOne();
-
-            //Operator current = this;
-            //while (current.Previous != null) current = current.Previous;
-            //do
-            //{
-            //    if (current.Middle !=null && !current.Middle.IsCompleted) current.Middle.AsyncWaitHandle.WaitOne();
-            //    current = current.Next;
-            //} while (current != null);
-
         }
 
         public virtual void CompletedCallBack(IAsyncResult ar)

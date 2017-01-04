@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Jake.V35.Core.Async.Interfaces;
 
 //======================================================//
@@ -16,12 +17,17 @@ namespace Jake.V35.Core.Async
     public class FuncAsync<TResult> : Operator, IFuncOperationAsync<TResult>
     {
         private TResult _result;
-
+        public bool IsComplted { get; private set; }
+        private readonly AutoResetEvent _waitSignal =  new AutoResetEvent(false);
+        public AutoResetEvent WaitSignal
+        {
+            get { return _waitSignal; }
+        }
         public TResult Result
         {
             get
             {
-                if (!Middle.IsCompleted || _result == null)
+                if (!Middle.IsCompleted || _result == null || !IsComplted)
                 {
                     _result = GetResult();
                 }
@@ -63,13 +69,17 @@ namespace Jake.V35.Core.Async
         public virtual TResult GetResult()
         {
             Wait();
+            _waitSignal.WaitOne();
             return this._result;
         }
 
         public void SetResult(TResult result)
         {
             _result = result;
+            _waitSignal.Set();
+            IsComplted = true;
         }
+
     }
     public class FuncAsync<T1, TResult> : FuncAsync<TResult>
     {

@@ -7,11 +7,15 @@
 
 
 //2015.12.19    添加异步操作接口
+
+using System.Threading;
+
 namespace Jake.V35.Core.Async.Interfaces
 {
     public interface IFuncOperationAsync<T>
     {
-        void SetResult(T result);
+        AutoResetEvent WaitSignal { get; }
+        bool IsComplted { get; }
         T GetResult();
     }
 }
