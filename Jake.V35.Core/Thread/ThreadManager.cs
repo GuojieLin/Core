@@ -215,27 +215,23 @@ namespace Jake.V35.Core.Thread
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        public void Close()
-        {
-            Dispose(true);
-        }
         private bool _isDispose = false;
+
         private void Dispose(bool isDispose)
         {
-            if (isDispose)
-            {
-                _isDispose = true;
-                this.Stop();
-                this._work = null;
-                this._workStarting = null;
-            }
+            if (!isDispose) return;
+            _isDispose = true;
+            this.Stop();
+            this._work = null;
+            this._workStarting = null;
         }
 
         private void CheckDispose()
         {
-            if (_isDispose) throw new Exception("当前对象已释放");
+            if (_isDispose) throw new ObjectDisposedException("当前对象已释放");
         }
     }
 }
