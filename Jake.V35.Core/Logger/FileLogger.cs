@@ -68,40 +68,16 @@ namespace Jake.V35.Core.Logger
             _writeThread.Start(new object[] { WriteLogDirectory, WriteAutoResetEvent });
             _emergencyWriteThread.Start(new object[] { EmergencyWriteLogDirectory, EmergencyWriteAutoResetEvent });
         }
+
         /// <summary>
         /// 使用一个明确的文件路径,若只有文件名则用默认
         /// </summary>
         /// <param name="fileName"></param>
-        public FileLogger(string fileName)
+        /// <param name="directoryName"></param>
+        public FileLogger(string fileName,string directoryName)
         {
-            Init(fileName);
-        }
-        public FileLogger(bool userDefaultRoot, params string[] paths)
-        {
-            if (paths == null) throw new ArgumentNullException("paths");
-            if (!paths.Any()) throw new Exception("至少输入一个路径");
-            var logPath = "";
-            if (userDefaultRoot) logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.DefaultLogDirectory);
-            logPath = paths.Aggregate(logPath, Path.Combine);
-            Init(logPath);
-        }
-        
-        private void Init(string logPath)
-        {
-            if (Path.HasExtension(logPath))
-            {
-                FileName = Path.GetFileName(logPath);
-                DirectoryName = Path.GetDirectoryName(logPath);
-                if (String.IsNullOrEmpty(DirectoryName))
-                {
-                    DirectoryName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.DefaultLogDirectory);
-                }
-            }
-            else
-            {
-                FileName = DateTime.Now.ToString(Constants.AutoFileNameFormat) + Constants.LogEntensionName;
-                DirectoryName = logPath;
-            }
+            FileName = fileName;
+            DirectoryName = directoryName;
         }
 
         private static void StartWriter(object parmameter)
@@ -161,7 +137,7 @@ namespace Jake.V35.Core.Logger
                 }
             }
         }
-        public bool WriteCore(LogType logType, string content, Exception exception, Func<string, Exception, string> formatter)
+        bool ILogger.WriteCore(LogType logType, string content, Exception exception, Func<string, Exception, string> formatter)
         {
             try
             {

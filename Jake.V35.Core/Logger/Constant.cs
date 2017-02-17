@@ -11,7 +11,7 @@ using System.Text;
 //======================================================//
 namespace Jake.V35.Core.Logger
 {
-    public class Constants
+    internal class Constants
     {
         public const string DefaultLogDirectory = "Logs\\";
         public const string LogEntensionName = ".log";

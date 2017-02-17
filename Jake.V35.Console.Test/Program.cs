@@ -90,47 +90,63 @@ namespace Jake.V35.Console.Test
             stopwatch.Start();
             LoggerInfo10Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerInfo10Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            stopwatch.Stop();
+            System.Console.WriteLine("LoggerInfo10Test：" + stopwatch.ElapsedMilliseconds + "s");
             stopwatch.Start();
             LoggerInfo100Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerInfo100Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerInfo100Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerInfo1000Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerInfo1000Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerInfo1000Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerError10Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerError10Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerError10Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerError100Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerError100Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerError100Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerError1000Test();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerError1000Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerError1000Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerErrorLargeTest();
             stopwatch.Stop();
-            System.Console.WriteLine("LoggerErrorLargeTest：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("LoggerErrorLargeTest：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
             LoggerMoreTest();
             stopwatch.Stop();
+            System.Console.WriteLine("LoggerMoreTest：" + stopwatch.ElapsedMilliseconds + "ms");
             stopwatch.Start();
-            System.Console.WriteLine("LoggerMoreTest：" + stopwatch.ElapsedMilliseconds / 1000.0+ "s");
+            stopwatch.Reset();
             LoggerMore2Test();
             stopwatch.Stop();
+            System.Console.WriteLine("LoggerMore2Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
-            System.Console.WriteLine("LoggerMore2Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
             Logger100000Test();
             stopwatch.Stop();
+            System.Console.WriteLine("Logger100000Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             stopwatch.Start();
-            System.Console.WriteLine("Logger100000Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
             Logger1000000Test();
             stopwatch.Stop();
-            System.Console.WriteLine("Logger100000Test：" + stopwatch.ElapsedMilliseconds / 1000.0 + "s");
+            System.Console.WriteLine("Logger1000000Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
+            stopwatch.Start();
+            LoggerMore1000Test();
+            stopwatch.Stop();
+            System.Console.WriteLine("LoggerMore1000Test：" + stopwatch.ElapsedMilliseconds +"ms");
+            stopwatch.Reset();
             System.Console.ReadKey();
         }
 
@@ -276,6 +292,18 @@ namespace Jake.V35.Console.Test
                 logger2.WriteError("测试2下".PadLeft(10000, 't'), new Exception("测试错误"));
             }
 
+        }
+        public static void LoggerMore1000Test()
+        {
+            var loggerFactory = FileLoggerFactory.Default;
+            for (int i = 0; i < 1000; i++)
+            {
+                ILogger logger = loggerFactory.Create("TestMore" + i + "Test.log");
+
+                string path = Path.Combine(logger.DirectoryName, logger.FileName);
+                if (File.Exists(path)) File.Delete(path);
+                logger.WriteInfo("测试多文件日志".PadLeft(10000, 't'));
+            }
         }
         public static void LoggerMoreTest()
         {

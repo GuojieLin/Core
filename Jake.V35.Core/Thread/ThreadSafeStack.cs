@@ -36,7 +36,8 @@ namespace Jake.V35.Core.Thread
         {
             lock (this)
             {
-                if (this.Count == 0)
+                //不能用if,否则有并发问题，导致队列是空
+                while (this.Count == 0)
                 {
                     //Stack is empty. Wait until Pulse is received from Push().
                     Monitor.Wait(this);

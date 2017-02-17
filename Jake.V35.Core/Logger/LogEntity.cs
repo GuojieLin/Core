@@ -14,9 +14,11 @@ using System.Threading;
 //======================================================//
 namespace Jake.V35.Core.Logger
 {
-    public class LogEntity:IDisposable
+    internal class LogEntity:IDisposable
     {
         public static object _syncLock = new object();
+        private int _syncIndex = 0;
+        //单个日志文件最大5M
         public const int MaxSize = 1024 * 1024 * 5;
         public LogEntity(string dictionaryName, string fileName)
         {
@@ -55,7 +57,8 @@ namespace Jake.V35.Core.Logger
                 {
                     fn = fn.Substring(0, index);
                 }
-                this.FileName = fn + "_" + DateTime.Now.ToString(Constants.AutoFileNameFormat) + ".log";
+                Interlocked.Increment(ref _syncIndex);
+                this.FileName = fn + "_" + _syncIndex + ".log";
             }
         }
         public void Write()

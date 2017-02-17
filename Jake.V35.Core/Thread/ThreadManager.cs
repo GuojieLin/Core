@@ -17,11 +17,12 @@ namespace Jake.V35.Core.Thread
     /// 一个通用的线程管理类
     /// 实现基于线程的异步操作
     ///  ThreadManager threadManger = new ThreadManager(logger);//初始化，指定初始线程数
+    ///  threadManger.WorkStarting += WorkStarting;//在轮旋开始前处理
     ///  threadManger.Work += Work;//指定线程执行工作
     /// if (!threadManger.IsStart)
     ///  threadManger.Start();//启动
     /// </summary>
-    public class ThreadManager
+    public class ThreadManager:IDisposable
     {
         private readonly AutoResetEvent _stopAutoResetEvent;
         private readonly ILogger _logger;
@@ -46,6 +47,16 @@ namespace Jake.V35.Core.Thread
         {
             add { _work += value; }
             remove { _work -= value; }
+        }
+
+        private event Action _workStarting;
+        /// <summary>
+        /// 线程循环前只执行一次
+        /// </summary>
+        public event Action WorkStarting
+        {
+            add { _workStarting += value; }
+            remove { _workStarting -= value; }
         }
 
         private event Action<object, EventArgs> _threadAmountChanged;
@@ -76,6 +87,7 @@ namespace Jake.V35.Core.Thread
         /// </summary>
         public void Start()
         {
+            CheckDispose();
             lock (_threads)
             {
                 if (IsStart)
@@ -93,6 +105,7 @@ namespace Jake.V35.Core.Thread
         /// </summary>
         public void Stop()
         {
+            CheckDispose();
             lock (_threads)
             {
                 //已经再等待则直接返回。
@@ -119,10 +132,13 @@ namespace Jake.V35.Core.Thread
         /// </summary>
         private void OnWork()
         {
+            CheckDispose();
+            if (_workStarting != null) _workStarting();
             if (_work != null)
             {
                 while (true)
                 {
+                    CheckDispose();
                     lock (_threads)
                     {
                         if (_threads.Count > ThreadAmount || _waitStop)
@@ -157,6 +173,7 @@ namespace Jake.V35.Core.Thread
         /// <param name="num"></param>
         public void ChangeThreadAmount(int num)
         {
+            CheckDispose();
             Interlocked.Exchange(ref _threadAmouont, num);
             AddThread(_threadAmouont - _threads.Count);
             OnThreadAmountChanged(this);
@@ -168,6 +185,7 @@ namespace Jake.V35.Core.Thread
         /// <param name="isStart"></param>
         private void AddThread(int num, bool isStart = true)
         {
+            CheckDispose();
             if (num > 0)
             {
                 _logger.WriteInfo(string.Format("增加{0}个线程", num));
@@ -189,8 +207,35 @@ namespace Jake.V35.Core.Thread
 
         protected virtual void OnThreadAmountChanged(object arg1)
         {
+            CheckDispose();
             var handler = _threadAmountChanged;
             if (handler != null) handler(arg1, EventArgs.Empty);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public void Close()
+        {
+            Dispose(true);
+        }
+        private bool _isDispose = false;
+        private void Dispose(bool isDispose)
+        {
+            if (isDispose)
+            {
+                _isDispose = true;
+                this.Stop();
+                this._work = null;
+                this._workStarting = null;
+            }
+        }
+
+        private void CheckDispose()
+        {
+            if (_isDispose) throw new Exception("当前对象已释放");
         }
     }
 }

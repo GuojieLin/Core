@@ -24,7 +24,7 @@ namespace Jake.V35.Core.Logger
 
         private static readonly Func<string, Exception, string> TheMessage =
             (message, error) =>
-                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n", NowTimeString, (string) message);
+                string.Format(CultureInfo.CurrentCulture, "{0}: {1}\r\n", NowTimeString, message);
 
         private static readonly Func<string, Exception, string> TheMessageAndError =
             (message, error) =>

@@ -15,10 +15,6 @@ namespace Jake.V35.Core.Logger
     {
         public string FileName { get; set; }
         public string DirectoryName { get; set; }
-        public EmptyLogger()
-        {
-        }
-
         public bool WriteCore(LogType logType, string content, Exception exception,
             Func<string, Exception, string> formatter)
         {
