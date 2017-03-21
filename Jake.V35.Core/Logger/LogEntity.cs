@@ -18,11 +18,12 @@ namespace Jake.V35.Core.Logger
     {
         public static object _syncLock = new object();
         private int _syncIndex = 0;
+        public LogConfiguration Configuration { get; private set; }
         //单个日志文件最大5M
-        public const int MaxSize = 1024 * 1024 * 5;
-        public LogEntity(string dictionaryName, string fileName)
+        public LogEntity(LogConfiguration configuration,string dictionaryName, string fileName)
         {
             StringBuilder = new StringBuilder(1024);
+            Configuration = configuration;
             DictionaryName = dictionaryName;
             FileName = fileName;
         }
@@ -70,14 +71,14 @@ namespace Jake.V35.Core.Logger
                 do
                 {
                     //总大小减去偏移量大于当前日志
-                    if (MaxSize - _offset > StringBuilder.Length)
+                    if (Configuration.MaxFileSize - _offset > StringBuilder.Length)
                     {
                         //可以直接写当前全部内容
                         temp = StringBuilder.Length;
                     }
                     else
                     {
-                        temp = MaxSize - _offset;
+                        temp = Configuration.MaxFileSize - _offset;
                     }
                     if (temp <= 0)
                     {
@@ -115,11 +116,9 @@ namespace Jake.V35.Core.Logger
         }
         private void Dispose(bool dispose = true)
         {
-            if(dispose)
-            {
-                this.Write();
-                _isDispose = true;
-            }
+            if (!dispose) return;
+            this.Write();
+            _isDispose = true;
         }
     }
 }

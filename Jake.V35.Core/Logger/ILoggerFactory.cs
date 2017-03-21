@@ -16,7 +16,7 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     public interface ILoggerProvider : ICreateLogger, ICloseLogger
     {
-
+        LogConfiguration Configuration { get; set; }
     }
 
     public interface ICreateLogger

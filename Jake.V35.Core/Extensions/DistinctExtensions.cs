@@ -22,7 +22,7 @@ namespace Jake.V35.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> Distinct<T, TResult>(this IEnumerable<T> source, Func<T, TResult> keySelector)
         {
-            return source.Distinct(new IEqualityComparer<T, TResult>(keySelector));
+            return source.Distinct(new EqualityComparer<T, TResult>(keySelector));
         }
     }
 }

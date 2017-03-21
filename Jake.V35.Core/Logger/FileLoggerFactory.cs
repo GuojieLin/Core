@@ -18,9 +18,10 @@ namespace Jake.V35.Core.Logger
     /// <summary>
     /// Provides an ILoggerFactory based on FileSystem.
     /// </summary>
-    public class FileLoggerFactory : ILoggerProvider
+    public class FileLoggerFactory 
     {
         private readonly FileLoggerProvider _fileLoggerProvider;
+
         static FileLoggerFactory()
         {
             Default = new FileLoggerFactory();
@@ -28,7 +29,8 @@ namespace Jake.V35.Core.Logger
 
         public FileLoggerFactory()
         {
-            _fileLoggerProvider = new FileLoggerProvider();
+            var configuration = new LogConfiguration();
+            _fileLoggerProvider = new FileLoggerProvider(configuration);
         }
 
         public FileLoggerFactory(FileLoggerProvider fileLoggerProvider)
@@ -38,7 +40,7 @@ namespace Jake.V35.Core.Logger
         /// <summary>
         /// Provides a default ILoggerFactory based on System.Diagnostics.TraceSorce.
         /// </summary>
-        public static ILoggerProvider Default { get; set; }
+        public static FileLoggerFactory Default { get; set; }
         /// <summary>
         /// Creates a new FileLogger for the given full name.
         /// </summary>

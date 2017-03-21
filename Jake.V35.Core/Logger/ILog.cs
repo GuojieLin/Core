@@ -17,11 +17,12 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     public interface ILogger
     {
+        LogConfiguration Configuration { get; set; }
         string FileName { get; set; }
         string DirectoryName { get; set; }
         /// <summary>
-        /// Aggregates most logging patterns to a single method.  This must be compatible with the Func representation in the OWIN environment.
-        /// 
+        /// Aggregates most logging patterns to a single method.  
+        /// This must be compatible with the Func representation in the OWIN environment.
         /// To check IsEnabled call WriteCore with only TraceEventType and check the return value, no event will be written.
         /// </summary>
         /// <param name="logType"></param>

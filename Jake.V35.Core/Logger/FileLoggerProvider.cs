@@ -14,6 +14,11 @@ namespace Jake.V35.Core.Logger
 {
     public class FileLoggerProvider : ILoggerProvider
     {
+        public LogConfiguration Configuration { get; set; }
+        public FileLoggerProvider(LogConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         /// <summary>
         /// Creates a new FileLogger for the given full name.
         /// </summary>
@@ -21,7 +26,33 @@ namespace Jake.V35.Core.Logger
         /// <returns></returns>
         public ILogger Create(string name)
         {
-            return InternalCreate(name);
+            return InternalCreate(name, this.Configuration);
+        }
+
+        /// <summary>
+        /// Creates a new FileLogger for the given full name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public ILogger Create(string name,LogConfiguration configuration)
+        {
+            return InternalCreate(name, configuration);
+        }
+        /// <summary>
+        /// 使用默认跟
+        /// </summary>
+        /// <param name="useDefaultRoot"></param>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        public ILogger Create(bool useDefaultRoot, LogConfiguration configuration, params string[] paths)
+        {
+            if (paths == null) throw new ArgumentNullException("paths");
+            if (!paths.Any()) throw new Exception("至少输入一个路径");
+            var logPath = "";
+            if (useDefaultRoot) logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.DefaultLogDirectory);
+            logPath = paths.Aggregate(logPath, Path.Combine);
+            return InternalCreate(logPath, configuration);
         }
         /// <summary>
         /// 使用默认跟
@@ -36,34 +67,12 @@ namespace Jake.V35.Core.Logger
             var logPath = "";
             if (useDefaultRoot) logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.DefaultLogDirectory);
             logPath = paths.Aggregate(logPath, Path.Combine);
-            return InternalCreate(logPath);
+            return InternalCreate(logPath,this.Configuration);
         }
-
-        private ILogger InternalCreate(string name)
+        private ILogger InternalCreate(string name, LogConfiguration configuration)
         {
-            string fileName, directoryName;
-            Init(name, out fileName, out directoryName);
-            return new FileLogger(fileName, directoryName);
+            return new FileLogger(name, configuration);
         }
-
-        private void Init(string logPath,out string fileName,out string dictionaryName)
-        {
-            if (Path.HasExtension(logPath))
-            {
-                fileName = Path.GetFileName(logPath);
-                dictionaryName = Path.GetDirectoryName(logPath);
-                if (String.IsNullOrEmpty(dictionaryName))
-                {
-                    dictionaryName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.DefaultLogDirectory);
-                }
-            }
-            else
-            {
-                fileName = DateTime.Now.ToString(Constants.AutoFileNameFormat) + Constants.LogEntensionName;
-                dictionaryName = logPath;
-            }
-        }
-
         public void Close()
         {
             //释放日志服务

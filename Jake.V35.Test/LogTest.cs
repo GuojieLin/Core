@@ -10,6 +10,34 @@ namespace Jake.V35.Test
     public class LogTest
     {
         [TestMethod]
+        public void LogConfigTest()
+        {
+            ILogger logger = FileLoggerFactory.Default.Create("Test.log");
+            LogConfiguration logConfiguration = new LogConfiguration();
+            Assert.AreEqual(logger.FileName, "Test.log");
+            Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+        }
+        [TestMethod]
+        public void LogConfig2Test()
+        {
+            LogConfiguration logConfiguration = new LogConfiguration();
+            logConfiguration.BasePath = "c:\\";
+            FileLoggerFactory factory = new FileLoggerFactory(new FileLoggerProvider(logConfiguration));
+            ILogger logger = factory.Create("Test.log");
+            Assert.AreEqual(logger.FileName, "Test.log");
+            Console.WriteLine(logger.DirectoryName);
+            Console.WriteLine(logger.FileName);
+            Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+            logger.Configuration = new LogConfiguration() {BasePath = "D:\\"};
+            Console.WriteLine(logger.DirectoryName);
+            Assert.AreEqual(logger.DirectoryName, "D:\\Logs\\");
+            ILogger logger1 = factory.Create("Test2.log");
+            Assert.AreEqual(logger1.FileName, "Test2.log");
+            Console.WriteLine(logger1.DirectoryName);
+            Console.WriteLine(logger1.FileName);
+            Assert.AreEqual(logger1.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+        }
+        [TestMethod]
         public void LoggerInfo10Test()
         {
             var loggerFactory = FileLoggerFactory.Default;

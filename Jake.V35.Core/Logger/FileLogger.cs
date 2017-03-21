@@ -23,7 +23,6 @@ namespace Jake.V35.Core.Logger
     {
         private static readonly Dictionary<string, LogEntity> WriteLogDirectory;
         private static readonly Dictionary<string, LogEntity> EmergencyWriteLogDirectory;
-
         //private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
         //private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
         //private static readonly Dictionary<string, object> FileLocks;
@@ -50,6 +49,32 @@ namespace Jake.V35.Core.Logger
         /// </summary>
         public string FileName { get; set; }
 
+        /// <summary>
+        /// FileLogger的别名
+        /// </summary>
+        public string FullName
+        {
+            get { return Path.Combine(this.DirectoryName, this.FileName); }
+        }
+
+        private LogConfiguration _configuration;
+
+        public LogConfiguration Configuration
+        {
+            get { return _configuration; }
+            set
+            {
+                _configuration = value;
+                //不为空的时候需要更新配置
+                OnConfigurationChanged();
+            }
+        }
+
+        private void OnConfigurationChanged()
+        {
+            Init(this.FileName);
+        }
+
         static FileLogger()
         {
             //FileLocks = new Dictionary<string, object>();
@@ -72,12 +97,42 @@ namespace Jake.V35.Core.Logger
         /// <summary>
         /// 使用一个明确的文件路径,若只有文件名则用默认
         /// </summary>
+        /// <param name="configuration">配置</param>
         /// <param name="fileName"></param>
         /// <param name="directoryName"></param>
-        public FileLogger(string fileName,string directoryName)
+        public FileLogger(string fileName, string directoryName, LogConfiguration configuration)
         {
+            _configuration = configuration;
             FileName = fileName;
             DirectoryName = directoryName;
+        }
+
+        public FileLogger(string logPath, LogConfiguration configuration)
+        {
+            _configuration = configuration;
+            Init(logPath);
+        }
+
+        /// <summary>
+        /// 重新初始化日志目录
+        /// </summary>
+        /// <param name="logPath"></param>
+        private void Init(string logPath)
+        {
+            if (Path.HasExtension(logPath))
+            {
+                FileName = Path.GetFileName(logPath);
+                DirectoryName = Path.GetDirectoryName(logPath);
+                if (String.IsNullOrEmpty(DirectoryName))
+                {
+                    DirectoryName = Path.Combine(_configuration.BasePath, Constants.DefaultLogDirectory);
+                }
+            }
+            else
+            {
+                FileName = DateTime.Now.ToString(_configuration.AutoFileNameDateFormat) + Constants.LogEntensionName;
+                DirectoryName = logPath;
+            }
         }
 
         private static void StartWriter(object parmameter)
@@ -165,8 +220,6 @@ namespace Jake.V35.Core.Logger
                 return false;
             }
         }
-
-
         private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogEntity /*IList<string>*/> dictionary)
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
@@ -176,7 +229,7 @@ namespace Jake.V35.Core.Logger
                 LogEntity logInfo;
                 if (!dictionary.TryGetValue(fullName, out logInfo))
                 {
-                    logInfo = new LogEntity(dictionaryName, fileName);
+                    logInfo = new LogEntity(Configuration, dictionaryName, fileName);
                     dictionary.Add(fullName, logInfo);
                 } 
                 logInfo.Append(msg);
@@ -184,7 +237,6 @@ namespace Jake.V35.Core.Logger
             
         }
         
-
         void IDisposable.Dispose()
         {
             Dispose();

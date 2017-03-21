@@ -15,11 +15,11 @@ namespace Jake.V35.Core.Extensions
     /// </summary>
     /// <typeparam name="TParameter"></typeparam>
     /// <typeparam name="TResult"></typeparam>
-    public class IEqualityComparer<TParameter, TResult> : IEqualityComparer<TParameter>
+    public class EqualityComparer<TParameter, TResult> : IEqualityComparer<TParameter>
     {
         private readonly Func<TParameter, TResult> _keySelector;
 
-        public IEqualityComparer(Func<TParameter, TResult> keySelector)
+        public EqualityComparer(Func<TParameter, TResult> keySelector)
         {
             this._keySelector = keySelector;
         }
