@@ -76,7 +76,7 @@ namespace Jake.V35.Core.Logger
         public void Close()
         {
             //释放日志服务
-            FileLogger.Dispose();
+            FileLogger.Dispose(true);
         }
     }
 }

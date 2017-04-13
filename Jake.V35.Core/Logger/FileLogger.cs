@@ -145,7 +145,7 @@ namespace Jake.V35.Core.Logger
             {
                 try
                 {
-                    autoResetEvent.WaitOne();
+                    autoResetEvent.WaitOne(10000);
                     bool hasLog = false;
                     Monitor.Enter(dictionary);
                     string[] fileNames = dictionary.Keys.ToArray();
@@ -176,9 +176,9 @@ namespace Jake.V35.Core.Logger
                             logger.WriteWarning("日志写入出错：", exception);
                         }
                     }
-                    if (!hasLog)
+                    if (hasLog)
                     {
-                        autoResetEvent.Reset();
+                        autoResetEvent.Set();
                     }
                 }
                 catch (Exception exception)
@@ -239,19 +239,23 @@ namespace Jake.V35.Core.Logger
         
         void IDisposable.Dispose()
         {
-            Dispose();
+            Dispose(true);
         }
-        public static void Dispose()
+
+        public static void Dispose(bool isDispose = true)
         {
-            while (WriteLogDirectory.Count > 0 || EmergencyWriteLogDirectory.Count > 0)
+            if (isDispose)
             {
-                //等待日志写完
-                System.Threading.Thread.Sleep(10);
+                while (WriteLogDirectory.Count > 0 || EmergencyWriteLogDirectory.Count > 0)
+                {
+                    //等待日志写完
+                    System.Threading.Thread.Sleep(10);
+                }
+                _start = false;
+                _isDispose = true;
+                EmergencyWriteAutoResetEvent = null;
+                WriteAutoResetEvent = null;
             }
-            _start = false;
-            _isDispose = true;
-            EmergencyWriteAutoResetEvent = null;
-            WriteAutoResetEvent = null;
         }
 
     }

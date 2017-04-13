@@ -46,7 +46,20 @@ namespace Jake.V35.Core.Logger
             {
                 throw new ArgumentNullException("logger");
             }
-            Debug.WriteLine(message);
+#if DEBUG
+            logger.WriteInfo(message, null);
+#endif
+        }
+        public static void WriteDebug(this ILogger logger, string message, Exception exception)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+#if DEBUG
+            if (exception == null) logger.WriteCore(LogType.Info, message, null, TheMessage);
+            else logger.WriteCore(LogType.Info, message, exception, TheMessageAndError);
+#endif
         }
         /// <summary>
         /// Writes an informational log message.
