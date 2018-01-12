@@ -27,21 +27,33 @@ namespace Jake.V35.Core.Logger
         public int MaxFileSize { get; set; }
 
         /// <summary>
+        /// 每次刷新流的大小
+        /// </summary>
+        public int FlushSize { get; set; }
+        /// <summary>
         /// 日志格式
         /// </summary>
-        public string DatePattern { get; set; }
+        public string DirectoryDatePattern { get; set; }
 
         /// <summary>
         /// 日志格式
         /// </summary>
         public string AutoFileNameDateFormat { get; set; }
+        /// <summary>
+        /// 日志对象多久释放一次，防止对一个日志文件少了读写时频繁打开关闭
+        /// </summary>
+        public TimeSpan LogAutoDisposeTime { get; set; }
 
         public LogConfiguration()
         {
             BasePath = AppDomain.CurrentDomain.BaseDirectory;
             MaxFileSize = 5242880;
-            DatePattern = "yyyyMMdd"; 
+            //至少达到5KB才写入
+            FlushSize = 5120;
+            DirectoryDatePattern = "yyyyMMdd"; 
             AutoFileNameDateFormat = "yyyyMMddHHmmss";
+            //日志为空时至少保留60s才释放
+            LogAutoDisposeTime = TimeSpan.FromSeconds(60);
         }
     }
 }

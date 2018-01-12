@@ -23,9 +23,6 @@ namespace Jake.V35.Core.Logger
     {
         private static readonly Dictionary<string, LogEntity> WriteLogDirectory;
         private static readonly Dictionary<string, LogEntity> EmergencyWriteLogDirectory;
-        //private static readonly Dictionary<string, IList<string>> WriteLogDirectory;
-        //private static readonly Dictionary<string, IList<string>> EmergencyWriteLogDirectory;
-        //private static readonly Dictionary<string, object> FileLocks;
         public static ILogger Empty = new EmptyLogger();
         private static AutoResetEvent WriteAutoResetEvent { get; set; }
         private static AutoResetEvent EmergencyWriteAutoResetEvent { get; set; }
@@ -49,6 +46,7 @@ namespace Jake.V35.Core.Logger
         /// </summary>
         public string FileName { get; set; }
 
+        private LogEntity _LogInfo;
         /// <summary>
         /// FileLogger的别名
         /// </summary>
@@ -77,9 +75,6 @@ namespace Jake.V35.Core.Logger
 
         static FileLogger()
         {
-            //FileLocks = new Dictionary<string, object>();
-            //WriteLogDirectory = new Dictionary<string, IList<string>>();
-            //EmergencyWriteLogDirectory = new Dictionary<string, IList<string>>();
             WriteLogDirectory = new Dictionary<string, LogEntity>();
             EmergencyWriteLogDirectory = new Dictionary<string, LogEntity>();
             WriteAutoResetEvent = new AutoResetEvent(false);
@@ -87,8 +82,8 @@ namespace Jake.V35.Core.Logger
             _writeThread = new System.Threading.Thread(StartWriter);
             _emergencyWriteThread = new System.Threading.Thread(StartWriter);
 
-            _writeThread.IsBackground = true;
-            _emergencyWriteThread.IsBackground = true;
+            _writeThread.IsBackground = false;
+            _emergencyWriteThread.IsBackground = false;
 
             _writeThread.Start(new object[] { WriteLogDirectory, WriteAutoResetEvent });
             _emergencyWriteThread.Start(new object[] { EmergencyWriteLogDirectory, EmergencyWriteAutoResetEvent });
@@ -145,6 +140,7 @@ namespace Jake.V35.Core.Logger
             {
                 try
                 {
+                    //10秒清理一次
                     autoResetEvent.WaitOne(10000);
                     bool hasLog = false;
                     Monitor.Enter(dictionary);
@@ -156,8 +152,12 @@ namespace Jake.V35.Core.Logger
                         lock (dictionary)
                         {
                             logEntity = dictionary[key];
-                            if (logEntity.Length<= 0)
+                            if (logEntity.Length <= 0 &&
+                                //保留一段时间，达到释放时间才释放
+                                logEntity.CreateTime.Add(logEntity.Configuration.LogAutoDisposeTime) >= DateTime.Now)
                             {
+                                //写完了释放对象
+                                logEntity.Dispose();
                                 //移除对象
                                 dictionary.Remove(key);
                                 System.Threading.Thread.Sleep(1);
@@ -199,7 +199,7 @@ namespace Jake.V35.Core.Logger
                 if(_isDispose) throw new Exception("日志服务已经释放");
                 string msg = formatter(content, exception);
                 string directoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
-                    DateTime.Now.ToString(Constants.LogDirectoryDateFormat), logType.GetValue());
+                    DateTime.Now.ToString(this.Configuration.DirectoryDatePattern), logType.GetValue());
                 if (logType == LogType.Error)
                 {
                     Log(directoryName, FileName, msg, EmergencyWriteLogDirectory);
@@ -220,21 +220,29 @@ namespace Jake.V35.Core.Logger
                 return false;
             }
         }
-        private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogEntity /*IList<string>*/> dictionary)
+        private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogEntity> dictionary)
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
             string fullName = Path.Combine(dictionaryName, this.FileName);
             lock (dictionary)
             {
-                LogEntity logInfo;
-                if (!dictionary.TryGetValue(fullName, out logInfo))
+                //第一次需要初始化
+                if (_LogInfo == null)
                 {
-                    logInfo = new LogEntity(Configuration, dictionaryName, fileName);
-                    dictionary.Add(fullName, logInfo);
-                } 
-                logInfo.Append(msg);
+                    if (!dictionary.TryGetValue(fullName, out _LogInfo))
+                    {
+                        _LogInfo = new LogEntity(Configuration, dictionaryName, fileName);
+                        dictionary.Add(fullName, _LogInfo);
+                    }
+                }
+                else if (_LogInfo.IsDispose)
+                {
+                    _LogInfo = new LogEntity(Configuration, dictionaryName, fileName);
+                    dictionary[fullName] = _LogInfo;
+                }
+                _LogInfo.Append(msg);
             }
-            
+
         }
         
         void IDisposable.Dispose()
@@ -242,14 +250,31 @@ namespace Jake.V35.Core.Logger
             Dispose(true);
         }
 
-        public static void Dispose(bool isDispose = true)
+        public static void Dispose(bool isDispose)
         {
             if (isDispose)
             {
+                if (_isDispose) return;
                 while (WriteLogDirectory.Count > 0 || EmergencyWriteLogDirectory.Count > 0)
                 {
                     //等待日志写完
-                    System.Threading.Thread.Sleep(10);
+                    System.Threading.Thread.Sleep(1000);
+                }
+                try
+                {
+                    _writeThread.Abort();
+                }
+                catch
+                {
+
+                }
+                try
+                {
+                    _emergencyWriteThread.Abort();
+                }
+                catch
+                {
+
                 }
                 _start = false;
                 _isDispose = true;

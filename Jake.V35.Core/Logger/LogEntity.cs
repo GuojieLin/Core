@@ -16,9 +16,13 @@ namespace Jake.V35.Core.Logger
 {
     internal class LogEntity:IDisposable
     {
-        public static object _syncLock = new object();
         private int _syncIndex = 0;
         public LogConfiguration Configuration { get; private set; }
+        public StreamWriter StreamWriter { get; private set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; private set; }
         //单个日志文件最大5M
         public LogEntity(LogConfiguration configuration,string dictionaryName, string fileName)
         {
@@ -26,21 +30,26 @@ namespace Jake.V35.Core.Logger
             Configuration = configuration;
             DictionaryName = dictionaryName;
             FileName = fileName;
+            CreateTime = DateTime.Now;
         }
         public string FileName { get; private set; }
         public string DictionaryName { get; private set; }
         public string FullName { get { return Path.Combine(DictionaryName, FileName); } }
-        private bool _isDispose=false;
+        public bool IsDispose { get; private set; }
+        private bool _IsDisposing;
         /// <summary>
         /// 实际偏移量，即当前实际写下的日志长度，不用读取文件也可以知道实际大小
         /// </summary>
-        private int _offset;
+        private int _Offset;
+
+        private bool _Reset = true;
+        private int _FlushCount;
         public StringBuilder StringBuilder { get; private set; }
         public int Length { get { return StringBuilder.Length; } }
 
         public void Append(string msg)
         {
-            if(_isDispose) throw new Exception("当前对象已释放");
+            if(IsDispose) throw new Exception("当前对象已释放");
             lock (this)
             {
                 StringBuilder.Append(msg);
@@ -49,60 +58,78 @@ namespace Jake.V35.Core.Logger
 
         private void GetNewName()
         {
-            lock (_syncLock)
+            var fn = Path.GetFileNameWithoutExtension(FileName);
+            Debug.Assert(fn != null);
+            int index = fn.LastIndexOf("_", StringComparison.OrdinalIgnoreCase);
+            if (index > 0)
             {
-                var fn = Path.GetFileNameWithoutExtension(FileName);
-                Debug.Assert(fn != null);
-                int index = fn.LastIndexOf("_", StringComparison.OrdinalIgnoreCase);
-                if (index > 0)
-                {
-                    fn = fn.Substring(0, index);
-                }
-                Interlocked.Increment(ref _syncIndex);
-                this.FileName = fn + "_" + _syncIndex + ".log";
+                fn = fn.Substring(0, index);
             }
+            Interlocked.Increment(ref _syncIndex);
+            this.FileName = fn + "_" + _syncIndex + ".log";
         }
+
         public void Write()
         {
-            if (_isDispose) throw new Exception("当前对象已释放");
+            if (IsDispose) throw new Exception("当前对象已释放");
             int temp = 0;
-            lock (this)
+            do
             {
-                do
+                if (StringBuilder.Length <= 0) return;
+                //总大小减去偏移量大于当前日志
+                if (Configuration.MaxFileSize - _Offset > StringBuilder.Length)
                 {
-                    //总大小减去偏移量大于当前日志
-                    if (Configuration.MaxFileSize - _offset > StringBuilder.Length)
-                    {
-                        //可以直接写当前全部内容
-                        temp = StringBuilder.Length;
-                    }
-                    else
-                    {
-                        temp = Configuration.MaxFileSize - _offset;
-                    }
-                    if (temp <= 0)
-                    {
-                        string oldName = this.FileName;
-                        GetNewName();
-                        Debug.Assert(oldName != FileName);
-                        //恢复偏移量
-                        Interlocked.Exchange(ref _offset, 0);
-                    }
-                } while (temp <= 0);
-            }
+                    //可以直接写当前全部内容
+                    temp = StringBuilder.Length;
+                }
+                else
+                {
+                    temp = Configuration.MaxFileSize - _Offset;
+                }
+                if (temp <= 0)
+                {
+                    string oldName = this.FileName;
+                    GetNewName();
+                    Debug.Assert(oldName != FileName);
+                    //恢复偏移量
+                    _Offset = 0;
+                    _FlushCount = 0;
+                    //新文件需要重置为true
+                    _Reset = true;
+                }
+            } while (temp <= 0);
             EnsureDirectory();
-            using (var logStreamWriter = new StreamWriter(FullName, true, Encoding.UTF8))
+            if (_Reset)
             {
-                logStreamWriter.Write(StringBuilder.ToString(0, temp));
-                logStreamWriter.Flush();
+                if (StreamWriter != null)
+                {
+                    //先释放原来的
+                    StreamWriter.Flush();
+                    StreamWriter.Close();
+                    StreamWriter.Dispose();
+                }
+                //正在停止则不在处理后续
+                if (_IsDisposing) return;
+                StreamWriter = new StreamWriter(FullName, true, Encoding.UTF8);
+                _Reset = false;
             }
+            //尽量一次性写入，减少频繁文件开关
+            StreamWriter.Write(StringBuilder.ToString(0, temp));
+            //判断是否写入
             lock (this)
             {
                 StringBuilder.Remove(0, temp);
             }
             //当前偏移量达到最大，则更换日志名称
-            Interlocked.Add(ref _offset, temp);
+            _Offset += temp;
+            if (_Offset/Configuration.FlushSize > _FlushCount)
+            {
+                //判断是否达到写入大小
+                StreamWriter.Flush();
+                _FlushCount = _Offset / Configuration.FlushSize;
+            }
         }
+
         private void EnsureDirectory()
         {
             var dir = Path.GetDirectoryName(DictionaryName);
@@ -111,14 +138,19 @@ namespace Jake.V35.Core.Logger
         }
         public void Dispose()
         {
-            if(!_isDispose) throw new Exception("当前对象已释放");
+            if(IsDispose) throw new Exception("当前对象已释放");
             Dispose(true);
         }
-        private void Dispose(bool dispose = true)
+        private void Dispose(bool dispose)
         {
             if (!dispose) return;
+            _IsDisposing = true;
             this.Write();
-            _isDispose = true;
+            //流写入硬盘
+            StreamWriter.Flush();
+            StreamWriter.Close();
+            StreamWriter.Dispose();
+            IsDispose = true;
         }
     }
 }

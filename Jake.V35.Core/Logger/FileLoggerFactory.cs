@@ -51,6 +51,16 @@ namespace Jake.V35.Core.Logger
             return _fileLoggerProvider.Create(name);
         }
         /// <summary>
+        /// Creates a new FileLogger for the given full name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public ILogger Create(string name, LogConfiguration configuration)
+        {
+            return _fileLoggerProvider.Create(name, configuration);
+        }
+        /// <summary>
         /// 使用默认跟
         /// </summary>
         /// <param name="useDefaultRoot"></param>

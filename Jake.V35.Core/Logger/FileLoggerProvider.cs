@@ -23,7 +23,7 @@ namespace Jake.V35.Core.Logger
         /// Creates a new FileLogger for the given full name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
         public ILogger Create(string name)
         {
             return InternalCreate(name, this.Configuration);
