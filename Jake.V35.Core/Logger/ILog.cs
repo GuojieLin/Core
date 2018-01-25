@@ -17,6 +17,7 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     public interface ILogger
     {
+        string Id { get; }
         LogConfiguration Configuration { get; set; }
         string FileName { get; set; }
         string DirectoryName { get; set; }

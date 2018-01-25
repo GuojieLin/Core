@@ -15,6 +15,7 @@ namespace Jake.V35.Core.Logger
     {
         public string FileName { get; set; }
         public string DirectoryName { get; set; }
+        public string Id { get; private set; }
         public LogConfiguration Configuration { get; set; }
         public EmptyLogger()
         {

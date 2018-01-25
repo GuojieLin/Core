@@ -23,6 +23,7 @@ namespace Jake.V35.Core.Logger
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; private set; }
+        public DateTime LastWriteTime { get; private set; }
         //单个日志文件最大5M
         public LogEntity(LogConfiguration configuration,string dictionaryName, string fileName)
         {
@@ -31,6 +32,7 @@ namespace Jake.V35.Core.Logger
             DictionaryName = dictionaryName;
             FileName = fileName;
             CreateTime = DateTime.Now;
+            LastWriteTime = DateTime.Now;
         }
         public string FileName { get; private set; }
         public string DictionaryName { get; private set; }
@@ -76,6 +78,7 @@ namespace Jake.V35.Core.Logger
             do
             {
                 if (StringBuilder.Length <= 0) return;
+                LastWriteTime = DateTime.Now;
                 //总大小减去偏移量大于当前日志
                 if (Configuration.MaxFileSize - _Offset > StringBuilder.Length)
                 {
@@ -107,6 +110,7 @@ namespace Jake.V35.Core.Logger
                     StreamWriter.Flush();
                     StreamWriter.Close();
                     StreamWriter.Dispose();
+                    StreamWriter = null;
                 }
                 //正在停止则不在处理后续
                 if (_IsDisposing) return;
@@ -147,9 +151,12 @@ namespace Jake.V35.Core.Logger
             _IsDisposing = true;
             this.Write();
             //流写入硬盘
-            StreamWriter.Flush();
-            StreamWriter.Close();
-            StreamWriter.Dispose();
+            if (StreamWriter != null)
+            {
+                StreamWriter.Flush();
+                StreamWriter.Close();
+                StreamWriter.Dispose();
+            }
             IsDispose = true;
         }
     }

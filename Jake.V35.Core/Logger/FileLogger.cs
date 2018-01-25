@@ -21,6 +21,7 @@ namespace Jake.V35.Core.Logger
     /// </summary>
     internal class FileLogger : ILogger,IDisposable
     {
+        public string Id { get; private set; }
         private static readonly Dictionary<string, LogEntity> WriteLogDirectory;
         private static readonly Dictionary<string, LogEntity> EmergencyWriteLogDirectory;
         public static ILogger Empty = new EmptyLogger();
@@ -46,7 +47,6 @@ namespace Jake.V35.Core.Logger
         /// </summary>
         public string FileName { get; set; }
 
-        private LogEntity _LogInfo;
         /// <summary>
         /// FileLogger的别名
         /// </summary>
@@ -97,6 +97,7 @@ namespace Jake.V35.Core.Logger
         /// <param name="directoryName"></param>
         public FileLogger(string fileName, string directoryName, LogConfiguration configuration)
         {
+            SetId();
             _configuration = configuration;
             FileName = fileName;
             DirectoryName = directoryName;
@@ -108,12 +109,17 @@ namespace Jake.V35.Core.Logger
             Init(logPath);
         }
 
+        private void SetId()
+        {
+            Id = Guid.NewGuid().ToString("N");
+        }
         /// <summary>
         /// 重新初始化日志目录
         /// </summary>
         /// <param name="logPath"></param>
         private void Init(string logPath)
         {
+            SetId();
             if (Path.HasExtension(logPath))
             {
                 FileName = Path.GetFileName(logPath);
@@ -140,6 +146,7 @@ namespace Jake.V35.Core.Logger
             {
                 try
                 {
+                    if(_isDispose) return;
                     //10秒清理一次
                     autoResetEvent.WaitOne(10000);
                     bool hasLog = false;
@@ -148,26 +155,41 @@ namespace Jake.V35.Core.Logger
                     Monitor.Exit(dictionary);
                     foreach (var key in fileNames)
                     {
-                        LogEntity logEntity;
+                        LogEntity logEntity, temp = null;
                         lock (dictionary)
                         {
-                            logEntity = dictionary[key];
+                            if (!dictionary.TryGetValue(key, out logEntity))
+                            {
+                                continue;
+                            }
                             if (logEntity.Length <= 0 &&
                                 //保留一段时间，达到释放时间才释放
-                                logEntity.CreateTime.Add(logEntity.Configuration.LogAutoDisposeTime) >= DateTime.Now)
+                                logEntity.LastWriteTime.Add(logEntity.Configuration.LogAutoDisposeTime) < DateTime.Now)
+                            {
+                                lock (dictionary)
+                                {
+                                    //移除对象
+                                    dictionary.Remove(key);
+                                }
+                                temp = logEntity;
+                            }
+                        }
+                        if (temp != null)
+                        {
+                            lock (logEntity)
                             {
                                 //写完了释放对象
                                 logEntity.Dispose();
-                                //移除对象
-                                dictionary.Remove(key);
-                                System.Threading.Thread.Sleep(1);
-                                continue;
                             }
                         }
                         hasLog = true;
                         try
                         {
-                            logEntity.Write();
+                            lock (logEntity)
+                            {
+                                if(logEntity.IsDispose) continue;
+                                logEntity.Write();
+                            }
                         }
                         catch (Exception exception)
                         {
@@ -196,7 +218,8 @@ namespace Jake.V35.Core.Logger
         {
             try
             {
-                if(_isDispose) throw new Exception("日志服务已经释放");
+                if (_isDispose) return false;//throw new Exception("日志服务已经释放");
+                content = string.Format("{0}-{1}", this.Id, content);
                 string msg = formatter(content, exception);
                 string directoryName = String.Format("{0}\\{1}\\{2}\\", DirectoryName.TrimEnd('\\'),
                     DateTime.Now.ToString(this.Configuration.DirectoryDatePattern), logType.GetValue());
@@ -220,29 +243,40 @@ namespace Jake.V35.Core.Logger
                 return false;
             }
         }
-        private void Log(string dictionaryName,string fileName, string msg, IDictionary<string, LogEntity> dictionary)
+
+        private void Log(string dictionaryName, string fileName, string msg, IDictionary<string, LogEntity> dictionary)
         {
             //首先缓存 队列查找是否存在该文件,存在则直接插入尾部,可减少文件读写次数
             string fullName = Path.Combine(dictionaryName, this.FileName);
+            LogEntity temp = null;
             lock (dictionary)
             {
-                //第一次需要初始化
-                if (_LogInfo == null)
+                LogEntity logInfo;
+                if (!dictionary.TryGetValue(fullName, out logInfo))
                 {
-                    if (!dictionary.TryGetValue(fullName, out _LogInfo))
+                    logInfo = new LogEntity(Configuration, dictionaryName, fileName);
+                    dictionary.Add(fullName, logInfo);
+                }
+                if (logInfo.CreateTime.ToString(Configuration.DirectoryDatePattern) !=
+                    DateTime.Now.ToString(Configuration.DirectoryDatePattern) || logInfo.IsDispose)
+                {
+                    temp = logInfo;
+                    //需要切日志了
+                    lock (dictionary)
                     {
-                        _LogInfo = new LogEntity(Configuration, dictionaryName, fileName);
-                        dictionary.Add(fullName, _LogInfo);
+                        logInfo = new LogEntity(Configuration, dictionaryName, fileName);
+                        dictionary[fullName] = logInfo;
                     }
                 }
-                else if (_LogInfo.IsDispose)
-                {
-                    _LogInfo = new LogEntity(Configuration, dictionaryName, fileName);
-                    dictionary[fullName] = _LogInfo;
-                }
-                _LogInfo.Append(msg);
+                logInfo.Append(msg);
             }
-
+            if (temp != null)
+            {
+                lock (temp)
+                {
+                    temp.Dispose();
+                }
+            }
         }
         
         void IDisposable.Dispose()
@@ -252,36 +286,22 @@ namespace Jake.V35.Core.Logger
 
         public static void Dispose(bool isDispose)
         {
+            if (_isDispose) return;
+            _start = false;
+            _isDispose = true;
             if (isDispose)
             {
-                if (_isDispose) return;
-                while (WriteLogDirectory.Count > 0 || EmergencyWriteLogDirectory.Count > 0)
+                //主动释放所有日志
+                lock (WriteLogDirectory)
                 {
-                    //等待日志写完
-                    System.Threading.Thread.Sleep(1000);
+                    WriteLogDirectory.Values.ForEach(l => l.Dispose());
                 }
-                try
+                //主动释放所有日志
+                lock (EmergencyWriteLogDirectory)
                 {
-                    _writeThread.Abort();
+                    EmergencyWriteLogDirectory.Values.ForEach(l => l.Dispose());
                 }
-                catch
-                {
-
-                }
-                try
-                {
-                    _emergencyWriteThread.Abort();
-                }
-                catch
-                {
-
-                }
-                _start = false;
-                _isDispose = true;
-                EmergencyWriteAutoResetEvent = null;
-                WriteAutoResetEvent = null;
             }
         }
-
     }
 }

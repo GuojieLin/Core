@@ -10,10 +10,51 @@ namespace Jake.V35.Test
     public class LogTest
     {
         [TestMethod]
+        public void LogConfigTest5()
+        {
+            LogConfiguration logConfiguration = new LogConfiguration();
+            logConfiguration.DirectoryDatePattern = "yyyyMMdd//HH";
+            logConfiguration.LogAutoDisposeTime = TimeSpan.FromSeconds(1);
+            FileLoggerProvider fileLoggerProvider = new FileLoggerProvider(logConfiguration);
+            FileLoggerFactory factory = new FileLoggerFactory(fileLoggerProvider);
+            ILogger logger = factory.Create("Test.log");
+            logger.WriteInfo(logConfiguration.DirectoryDatePattern);
+            Assert.AreEqual(logger.FileName, "Test.log");
+            Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+            Thread.Sleep(2000);
+            ILogger logger1 = factory.Create("Test.log");
+            logger.WriteInfo(logConfiguration.DirectoryDatePattern);
+            logger1.WriteInfo(logConfiguration.DirectoryDatePattern);
+            Thread.Sleep(2000000);
+        }
+        [TestMethod]
         public void LogConfigTest()
         {
             ILogger logger = FileLoggerFactory.Default.Create("Test.log");
             LogConfiguration logConfiguration = new LogConfiguration();
+            Assert.AreEqual(logger.FileName, "Test.log");
+            logger.WriteInfo(logConfiguration.DirectoryDatePattern);
+            Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+        }
+        [TestMethod]
+        public void LogConfigTest2()
+        {
+            LogConfiguration logConfiguration = new LogConfiguration();
+            logConfiguration.DirectoryDatePattern = "yyyyMMdd//HH";
+            FileLoggerProvider fileLoggerProvider = new FileLoggerProvider(logConfiguration);
+            FileLoggerFactory factory = new FileLoggerFactory(fileLoggerProvider);
+            ILogger logger = factory.Create("Test.log");
+            logger.WriteInfo(logConfiguration.DirectoryDatePattern);
+            Assert.AreEqual(logger.FileName, "Test.log");
+            Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
+        }
+        [TestMethod]
+        public void LogConfigTest3()
+        {
+            LogConfiguration logConfiguration = new LogConfiguration();
+            logConfiguration.DirectoryDatePattern = "yyyyMMdd//HH//mm";
+            ILogger logger = FileLoggerFactory.Default.Create("Test.log", logConfiguration);
+            logger.WriteInfo(logConfiguration.DirectoryDatePattern);
             Assert.AreEqual(logger.FileName, "Test.log");
             Assert.AreEqual(logger.DirectoryName, Path.Combine(logConfiguration.BasePath, "Logs\\"));
         }
@@ -156,16 +197,41 @@ namespace Jake.V35.Test
         }
 
         [TestMethod]
+        public void LoggerMore3Test()
+        {
+            var loggerFactory = FileLoggerFactory.Default;
+            ILogger logger1 = loggerFactory.Create("TestMore1.log");
+            ILogger logger2 = loggerFactory.Create("TestMore2.log");
+
+            string path = Path.Combine(logger1.DirectoryName, logger1.FileName);
+            if (File.Exists(path)) File.Delete(path);
+            path = Path.Combine(logger2.DirectoryName, logger2.FileName);
+            if (File.Exists(path)) File.Delete(path);
+            for (int i = 0; i < 100; i++)
+            {
+                logger1 = loggerFactory.Create("TestMore1.log");
+                logger1.WriteInfo("测试more1下");
+                logger2 = loggerFactory.Create("TestMore2.log");
+                logger2.WriteInfo("测试more2下");
+            }
+        }
+
+        [TestMethod]
         public void LoggerMoreWrite()
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
             {
                 Thread t = new Thread(() =>
                 {
-                    while (true)
+                    for (int z = 0; z < 10000; z++)
                     {
                         ILogger logger1 = FileLoggerFactory.Default.Create("TestMore.log");
-                        logger1.WriteInfo("test");
+                        //1s释放一次
+                        logger1.Configuration.LogAutoDisposeTime = TimeSpan.FromSeconds(2);
+                        for (int j = 0; j < 100; j++)
+                        {
+                            logger1.WriteInfo("test");
+                        }
                         Thread.Sleep(1);
                     }
                 });
