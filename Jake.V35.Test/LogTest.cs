@@ -10,6 +10,46 @@ namespace Jake.V35.Test
     public class LogTest
     {
         [TestMethod]
+        public void StartTest()
+        {
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+            FileLoggerFactory.Default.Start();
+            Assert.IsTrue(FileLoggerFactory.Default.IsStart);
+        }
+        [TestMethod]
+        public void StopTest()
+        {
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+            FileLoggerFactory.Default.Close();
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+        }
+        [TestMethod]
+        public void StartStopTest()
+        {
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+            FileLoggerFactory.Default.Start();
+            Assert.IsTrue(FileLoggerFactory.Default.IsStart);
+            FileLoggerFactory.Default.Close();
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+        }
+        [TestMethod]
+        public void StartStopTest1()
+        {
+
+            FileLoggerProvider fileLoggerProvider = new FileLoggerProvider(new LogConfiguration());
+            FileLoggerFactory factory = new FileLoggerFactory(fileLoggerProvider);
+
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+            Assert.IsFalse(factory.IsStart);
+
+            FileLoggerFactory.Default.Start();
+            Assert.IsTrue(FileLoggerFactory.Default.IsStart);
+            Assert.IsTrue(factory.IsStart);
+            FileLoggerFactory.Default.Close();
+            Assert.IsFalse(FileLoggerFactory.Default.IsStart);
+            Assert.IsFalse(factory.IsStart);
+        }
+        [TestMethod]
         public void LogConfigTest5()
         {
             LogConfiguration logConfiguration = new LogConfiguration();

@@ -78,5 +78,18 @@ namespace Jake.V35.Core.Logger
             //释放日志服务
             FileLogger.Dispose(true);
         }
+
+        public void Start()
+        {
+            FileLogger.Start();
+        }
+
+        public bool IsStart
+        {
+            get
+            {
+                return FileLogger.IsStart;
+            }
+        }
     }
 }

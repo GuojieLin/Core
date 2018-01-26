@@ -27,16 +27,16 @@ namespace Jake.V35.Core.Logger
         public static ILogger Empty = new EmptyLogger();
         private static AutoResetEvent WriteAutoResetEvent { get; set; }
         private static AutoResetEvent EmergencyWriteAutoResetEvent { get; set; }
-        private static bool _start = true;
+        public static bool IsStart { get; private set; }
         private static bool _isDispose = false;
         /// <summary>
         /// 一般日志
         /// </summary>
-        private static readonly System.Threading.Thread _writeThread;
+        private static System.Threading.Thread _writeThread;
         /// <summary>
         /// 错误日志另外处理，保证能实时记录
         /// </summary>
-        private static readonly System.Threading.Thread _emergencyWriteThread;
+        private static System.Threading.Thread _emergencyWriteThread;
         /// <summary>
         /// 路径
         /// </summary>
@@ -77,6 +77,10 @@ namespace Jake.V35.Core.Logger
         {
             WriteLogDirectory = new Dictionary<string, LogEntity>();
             EmergencyWriteLogDirectory = new Dictionary<string, LogEntity>();
+        }
+        internal static void Start()
+        {
+            if (IsStart) return;
             WriteAutoResetEvent = new AutoResetEvent(false);
             EmergencyWriteAutoResetEvent = new AutoResetEvent(false);
             _writeThread = new System.Threading.Thread(StartWriter);
@@ -85,6 +89,7 @@ namespace Jake.V35.Core.Logger
             _writeThread.IsBackground = false;
             _emergencyWriteThread.IsBackground = false;
 
+            IsStart = true;
             _writeThread.Start(new object[] { WriteLogDirectory, WriteAutoResetEvent });
             _emergencyWriteThread.Start(new object[] { EmergencyWriteLogDirectory, EmergencyWriteAutoResetEvent });
         }
@@ -105,6 +110,7 @@ namespace Jake.V35.Core.Logger
 
         public FileLogger(string logPath, LogConfiguration configuration)
         {
+            SetId();
             _configuration = configuration;
             Init(logPath);
         }
@@ -119,7 +125,6 @@ namespace Jake.V35.Core.Logger
         /// <param name="logPath"></param>
         private void Init(string logPath)
         {
-            SetId();
             if (Path.HasExtension(logPath))
             {
                 FileName = Path.GetFileName(logPath);
@@ -142,7 +147,7 @@ namespace Jake.V35.Core.Logger
             var paras = (object[]) parmameter;
             IDictionary<string,LogEntity> dictionary = (IDictionary<string, LogEntity>)paras[0];
             AutoResetEvent autoResetEvent = (AutoResetEvent)paras[1];
-            while (_start)
+            while (IsStart)
             {
                 try
                 {
@@ -287,7 +292,7 @@ namespace Jake.V35.Core.Logger
         public static void Dispose(bool isDispose)
         {
             if (_isDispose) return;
-            _start = false;
+            IsStart = false;
             _isDispose = true;
             if (isDispose)
             {
@@ -303,5 +308,6 @@ namespace Jake.V35.Core.Logger
                 }
             }
         }
+
     }
 }

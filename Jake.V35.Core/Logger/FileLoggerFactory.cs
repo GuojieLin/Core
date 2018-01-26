@@ -21,7 +21,12 @@ namespace Jake.V35.Core.Logger
     public class FileLoggerFactory 
     {
         private readonly FileLoggerProvider _fileLoggerProvider;
-
+        public bool IsStart {
+            get
+            {
+                return _fileLoggerProvider.IsStart;
+            }
+        } 
         static FileLoggerFactory()
         {
             Default = new FileLoggerFactory();
@@ -70,7 +75,10 @@ namespace Jake.V35.Core.Logger
         {
             return _fileLoggerProvider.Create(useDefaultRoot,names);
         }
-
+        public void Start()
+        {
+            _fileLoggerProvider.Start();
+        }
         public void Close()
         {
             _fileLoggerProvider.Close();

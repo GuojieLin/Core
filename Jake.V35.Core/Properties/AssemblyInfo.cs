@@ -39,5 +39,6 @@ using System.Runtime.InteropServices;
 //          1.1.1.2 修复没到时间就释放日志对象的问题
 //          1.1.4.0 目录变了需要切日志。
 //          1.1.4.5 一些bug修复，关闭时写入所有日志
-[assembly: AssemblyVersion("1.1.4.5")]
-[assembly: AssemblyFileVersion("1.1.4.5")]
+//          1.1.5.0 增加Start方法启动日志服务
+[assembly: AssemblyVersion("1.1.5.0")]
+[assembly: AssemblyFileVersion("1.1.5.0")]

@@ -14,11 +14,19 @@ namespace Jake.V35.Core.Logger
     /// <summary>
     /// Used to create logger instances of the given name.
     /// </summary>
-    public interface ILoggerProvider : ICreateLogger, ICloseLogger
+    public interface ILoggerProvider : ICreateLogger,IStartLogger, ICloseLogger
     {
         LogConfiguration Configuration { get; set; }
     }
 
+    public interface IStartLogger
+    {
+        /// <summary>
+        /// Start Logger service.
+        /// </summary>
+        /// <returns></returns>
+        void Start();
+    }
     public interface ICreateLogger
     {
         /// <summary>
